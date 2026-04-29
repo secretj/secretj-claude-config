@@ -1,6 +1,6 @@
 # secretj-claude-config
 
-개인용 Claude Code dotfiles. 회사용 dotfiles(`bradykim7/cursor-setting`) 위에 **레이어드** 되도록 설계되었습니다.
+개인용 Claude Code dotfiles.
 
 새 컴퓨터에서 `git pull` 두 번 + `install.sh` 두 번이면 Claude Code 환경이 그대로 복원됩니다.
 
