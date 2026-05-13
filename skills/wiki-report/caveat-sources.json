@@ -1,0 +1,29 @@
+{
+  "_comment": "wiki-report 스킬이 caveat 출처 갱신 시 회피해야 할 used URLs 풀. wiki-report-evolve 가 매주 자동 갱신.",
+  "schema_version": 1,
+  "last_updated": "2026-05-07",
+  "used_urls": [
+    "https://www.faros.ai/blog/lines-of-code-metric-ai-vanity-outcome",
+    "https://cloud.google.com/resources/content/2025-dora-ai-assisted-software-development-report",
+    "https://www.gitclear.com/blog/new_research_ai_coding_tools_attract_top_performers_but_do_they_create_them",
+    "https://www.sonarsource.com/blog/state-of-code-developer-survey-report-the-current-reality-of-ai-coding",
+    "https://www.faros.ai/blog/5th-dora-metric-rework-rate-track-it-now",
+    "https://philippdubach.com/posts/93-of-developers-use-ai-coding-tools.-productivity-hasnt-moved./",
+    "https://metr.org/blog/2026-02-24-uplift-update/",
+    "https://www.coderabbit.ai/blog/2025-was-the-year-of-ai-speed-2026-will-be-the-year-of-ai-quality",
+    "https://opsera.ai/knowledge-base/quality-risk/what-is-defect-escape-rate-der-and-why-it-matters-a-comprehensive-guide/",
+    "https://larridin.com/developer-productivity-hub/code-turnover-rate-ai-quality-metric"
+  ],
+  "url_metadata": [
+    {"url": "https://www.faros.ai/blog/lines-of-code-metric-ai-vanity-outcome", "topic": "LOC 함정", "first_used": "4월5주차", "published": "2026-01"},
+    {"url": "https://cloud.google.com/resources/content/2025-dora-ai-assisted-software-development-report", "topic": "개인 vs 팀", "first_used": "4월5주차", "published": "2025-09"},
+    {"url": "https://www.gitclear.com/blog/new_research_ai_coding_tools_attract_top_performers_but_do_they_create_them", "topic": "단기 속도 vs 품질", "first_used": "4월5주차", "published": "2026-01"},
+    {"url": "https://www.sonarsource.com/blog/state-of-code-developer-survey-report-the-current-reality-of-ai-coding", "topic": "결함 탈출률", "first_used": "4월5주차", "published": "2026-01"},
+    {"url": "https://www.faros.ai/blog/5th-dora-metric-rework-rate-track-it-now", "topic": "Rework Rate", "first_used": "4월5주차", "published": "2025-10"},
+    {"url": "https://philippdubach.com/posts/93-of-developers-use-ai-coding-tools.-productivity-hasnt-moved./", "topic": "LOC 함정", "first_used": "4월6주차", "published": "2026-01"},
+    {"url": "https://metr.org/blog/2026-02-24-uplift-update/", "topic": "개인 vs 팀", "first_used": "4월6주차", "published": "2026-02"},
+    {"url": "https://www.coderabbit.ai/blog/2025-was-the-year-of-ai-speed-2026-will-be-the-year-of-ai-quality", "topic": "단기 속도 vs 품질", "first_used": "4월6주차", "published": "2025-12"},
+    {"url": "https://opsera.ai/knowledge-base/quality-risk/what-is-defect-escape-rate-der-and-why-it-matters-a-comprehensive-guide/", "topic": "결함 탈출률 정의", "first_used": "4월6주차", "published": "2026-04"},
+    {"url": "https://larridin.com/developer-productivity-hub/code-turnover-rate-ai-quality-metric", "topic": "Code Turnover 정의", "first_used": "4월6주차", "published": "2026-03"}
+  ]
+}
