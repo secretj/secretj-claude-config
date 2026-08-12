@@ -1,0 +1,36 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__codegraph__codegraph_search",
+      "mcp__codegraph__codegraph_context",
+      "mcp__codegraph__codegraph_callers",
+      "mcp__codegraph__codegraph_callees",
+      "mcp__codegraph__codegraph_impact",
+      "mcp__codegraph__codegraph_node",
+      "mcp__codegraph__codegraph_status"
+    ]
+  },
+  "model": "opus[1m]",
+  "hooks": {
+    "Stop": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$HOME/.claude/hooks/log-session.sh"
+          }
+        ]
+      }
+    ]
+  },
+  "enabledPlugins": {
+    "frontend-design@claude-plugins-official": true
+  },
+  "tui": "fullscreen",
+  "editorMode": "normal",
+  "autoCompactEnabled": true,
+  "workflowKeywordTriggerEnabled": false,
+  "skipWorkflowUsageWarning": true,
+  "skipAutoPermissionPrompt": true
+}

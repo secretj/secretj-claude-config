@@ -1,0 +1,36 @@
+# ─────────────────────────────────────────────────────────────
+# 비공개 영역 — 디스크에는 남기되 절대 커밋하지 않는다
+# ~/.claude/skills 는 이 저장소의 skills/ 로 dir-symlink 되어 있어서
+# 파일을 지우면 로컬 설치본에서도 사라진다. 그래서 "추적만" 해제한다.
+# ─────────────────────────────────────────────────────────────
+skills/wiki-report/
+skills/wiki-report-evolve/
+docs/
+private/
+
+# install.sh 가 만든 백업
+*.bak
+*.bak.*
+
+# OS 부산물
+.DS_Store
+**/.DS_Store
+Thumbs.db
+
+# 에디터
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# 비밀이 들어갈 가능성이 있는 파일 (실수 방지)
+*.local.json
+mcp-servers.json
+.env
+.env.*
+*.token
+*.pem
+*.key
+secrets/
+credentials/

@@ -1,0 +1,52 @@
+{
+  "_comment": [
+    "~/.claude.json 의 mcpServers 블록 템플릿. 실제 토큰은 절대 커밋하지 않는다.",
+    "적용: 이 파일을 mcp-servers.json 으로 복사(.gitignore 처리됨)해 <...> 를 채운 뒤",
+    "     ../install.sh --mcp 를 실행하거나 아래 claude mcp add-json 명령을 직접 쓴다.",
+    "",
+    "claude mcp add-json --scope user codegraph '{\"type\":\"stdio\",\"command\":\"codegraph\",\"args\":[\"serve\",\"--mcp\"]}'",
+    "claude mcp add-json --scope user playwright '{\"type\":\"stdio\",\"command\":\"npx\",\"args\":[\"-y\",\"@playwright/mcp@latest\"]}'",
+    "claude mcp add-json --scope user notion '{\"type\":\"http\",\"url\":\"https://mcp.notion.com/mcp\"}'",
+    "",
+    "회사/조직 전용 MCP 서버는 이 저장소에 넣지 않는다."
+  ],
+
+  "mcpServers": {
+    "codegraph": {
+      "type": "stdio",
+      "command": "codegraph",
+      "args": ["serve", "--mcp"]
+    },
+
+    "playwright": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "@playwright/mcp@latest"],
+      "env": {}
+    },
+
+    "notion": {
+      "type": "http",
+      "url": "https://mcp.notion.com/mcp"
+    },
+
+    "obsidian": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "obsidian-mcp-server"],
+      "env": {
+        "OBSIDIAN_API_KEY": "<Obsidian Local REST API 플러그인에서 발급한 키>",
+        "OBSIDIAN_BASE_URL": "https://127.0.0.1:27124",
+        "OBSIDIAN_VERIFY_SSL": "false"
+      }
+    },
+
+    "Neon": {
+      "type": "http",
+      "url": "https://mcp.neon.tech/mcp",
+      "headers": {
+        "Authorization": "Bearer <napi_로 시작하는 Neon API 키>"
+      }
+    }
+  }
+}

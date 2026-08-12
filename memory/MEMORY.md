@@ -1,0 +1,19 @@
+- [작업 후 테스트 필수](feedback_test_after_work.md) — 코드 작업 시 테스트 코드 작성 + 실행까지 완료
+- [UI 프리뷰는 전체 CSS+실뷰포트로](feedback_ui_preview_full_css.md) — 격리 harness 금지, 공용 스타일시트 클래스 이름 충돌 확인
+- [브랜치 체크아웃 직후 상태 검증](feedback_git_checkout_verify.md) — checkout/pull 후 바로 Edit/commit 금지, log+status+Read로 상태 먼저 확인
+- [리서치 문서 간결하게](feedback_report_brevity.md) — 표 남발·가상 시나리오 분기 금지. 결론+file:line+한 줄 이유로 충분
+- [도달 가능성은 호출부를 열어 확인](feedback_verify_at_callsites.md) — 추측으로 방어 코드 늘리지 말고 생산자 전수 확인 후 판단
+- [PR 리뷰는 대상 검증 먼저](feedback_pr_review_verify_target.md) — PR URL 받으면 `gh pr view`로 head/base 확정, 로컬 브랜치 HEAD를 리뷰하지 말 것
+- [디자인은 서비스 고유 대상을 직접 형상화](feedback_creative_specific_design.md) — 추상적 모티프 반려 전례, 흔한 픽토그램과 실루엣 겹침 사전 검토
+- [HTML 문서 푸터·저장경로 규칙](feedback_html_doc_output.md) — 푸터=`{소속} {이름}`, 저장=`~/Desktop/docs/(연월)/(이슈번호)-(내용 한글).html`
+- [날짜 출력 통일의 범위](feedback_date_output_scope.md) — 통일 대상은 프론트↔백 JSON. CSV/엑셀 다운로드는 로컬 TZ 유지가 정답
+- [해외 접속 가능한 서비스의 TZ 전제](feedback_multiregion_timezone.md) — 날짜/시간 설계 시 "서버 TZ 고정" 금지. 요청 TZ를 명시적으로 수신·해석
+- [Jira 댓글은 덧붙이지 말 것](feedback_jira_comment_no_append.md) — 중간 과정은 PR 본문에. 결론 한 번만, 못 고치면 사용자에게 본문 전달
+- [Jira 문법은 도구마다 다름](reference_jira_description_markdown.md) — description/Confluence=마크다운, **댓글=wiki markup**(변환 안 함). 댓글 수정·삭제 도구 없음
+- [리서치는 Obsidian Research/ 폴더에 저장](feedback_research_obsidian_path.md) — /research 결과물은 vault 루트 `Research/`에, 도메인 지식 폴더와 분리
+- [Obsidian vault 경로 + MCP fallback](reference_obsidian_vault_path.md) — vault=`~/Documents/Obsidian Vault`, obsidian MCP 미등록 잦음 → `find` 로 직접 카운트
+- [ot-job-tracker 인프라 상태](project_ot_job_tracker_infra.md) — Vercel+Neon+GitHub Actions로 운영. Fly는 trial 만료로 폐기, Phase 6 마이그레이션 보류
+- [체키 안드로이드 콜렉터 운영](project_checky_android_collector.md) — TWA+결제수집기, 사이드로드 배포. 빌드=checky-apk 워크스페이스, 결제앱목록=collector-config.json 파일수정
+- [품앗이(구 경조사비 장부) 앱 정체성](project_gyeongjosabi_note_app_identity.md) — 브랜드명 "품앗이", 아이콘=봉투 속 지폐 컨셉, 리브랜딩 경위
+- [품앗이 계정+동기화는 철회됨](project_gyeongjosabi_note_account_sync.md) — Firebase 걷어내고 로컬 우선 확정, 자동 로컬 백업+CSV 복구로 대체
+- [품앗이 검증용 에뮬레이터](project_poomasi_emulator_setup.md) — `poomasi_api36` 사용. 기존 gyeongjosabi_test는 부팅 불가, 부팅 직후엔 키보드가 안 뜬다
