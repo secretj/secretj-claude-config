@@ -53,6 +53,7 @@ link_dir() {
 say "[1/6] 디렉토리 symlink"
 link_dir skills
 link_dir hooks
+link_dir templates
 run "chmod +x '$REPO/hooks/'*.sh 2>/dev/null || true"
 
 # ── 2. 파일 단위 symlink (CLAUDE.md, settings.json) ───────────────
