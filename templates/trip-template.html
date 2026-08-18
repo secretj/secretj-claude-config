@@ -1,0 +1,1300 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>간사이 여행 일정 (오사카 · 교토 · 나라)</title>
+<style>
+/* NAVER design system */
+:root{
+  --green:#03C75A;
+  --green-dark:#02B350;
+  --green-bg:#EAF9F0;
+  --bg:#FFFFFF;
+  --bg-sub:#F7F8FA;
+  --text:#222222;
+  --text2:#767676;
+  --text3:#B0B3BA;
+  --line:#EAEBEE;
+  --line-strong:#DADCE0;
+  --red:#F03E3E;
+  --blue:#2F6FED;
+  --sans:"Pretendard","Apple SD Gothic Neo","Malgun Gothic",-apple-system,BlinkMacSystemFont,"Noto Sans KR",sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{
+  font-family:var(--sans);
+  background:var(--bg-sub);
+  color:var(--text);
+  line-height:1.5;
+  letter-spacing:-.02em;
+  padding-bottom:calc(60px + env(safe-area-inset-bottom));
+  -webkit-font-smoothing:antialiased;
+  -webkit-text-size-adjust:100%;
+  -webkit-tap-highlight-color:transparent;
+}
+
+/* 상단 */
+.header{
+  position:sticky; top:0; z-index:100;
+  background:var(--bg); padding:14px 16px 13px;
+  border-bottom:1px solid var(--line);
+}
+.header h1{ font-size:1.125rem; font-weight:700; color:var(--text); line-height:1.35; }
+.header h1::before{
+  content:''; display:inline-block; width:4px; height:16px; border-radius:2px;
+  background:var(--green); margin-right:8px; vertical-align:-2px;
+}
+.trip-info{ font-size:.75rem; color:var(--text2); margin-top:5px; font-weight:400; }
+
+/* 일자 제목 */
+.day-section{ display:none; }
+.day-section.active{ display:block; }
+.day-header{
+  display:flex; align-items:center; justify-content:space-between; gap:10px;
+  background:var(--bg); padding:16px 16px 14px; margin-bottom:8px;
+  border-bottom:1px solid var(--line);
+}
+.day-header>span:first-child{ font-size:1rem; font-weight:700; color:var(--text); }
+.day1{--accent:var(--green);} .day2{--accent:var(--green);}
+.day3{--accent:var(--green);} .day4{--accent:var(--green);}
+.dayC{--accent:var(--green);} .dayP{--accent:var(--green);} .dayO{--accent:var(--green);}
+
+.progress-circle{
+  font-size:.75rem; font-weight:700; color:var(--green);
+  background:var(--green-bg)!important; padding:4px 10px; border-radius:12px;
+  min-width:0; height:auto; display:inline-block; flex-shrink:0;
+}
+
+.itinerary-map-container{ display:flex; flex-direction:column; gap:8px; }
+.itinerary-section{ background:var(--bg); padding:14px 16px 6px; }
+.map-section{ background:var(--bg); padding:14px 16px 16px; }
+@media (min-width:880px){
+  .itinerary-map-container{ flex-direction:row; align-items:flex-start; height:82vh; }
+  .itinerary-section{ flex:1.08; overflow-y:auto; height:100%; }
+  .map-section{ flex:1; position:sticky; top:0; height:100%; }
+}
+
+/* 안내 박스 */
+.day-note{
+  background:var(--bg-sub); border-radius:8px; padding:12px 14px; margin-bottom:12px;
+  font-size:.8125rem; color:var(--text2); line-height:1.65;
+}
+.day-note b{ color:var(--text); font-weight:600; }
+.current-route{
+  background:var(--green-bg); border-radius:8px; padding:10px 14px; margin-bottom:14px;
+  font-size:.75rem; color:var(--green-dark); font-weight:500;
+}
+
+/* 일정 행 */
+.activity{
+  display:flex; align-items:flex-start; gap:10px;
+  padding:14px 0; border-bottom:1px solid var(--line);
+}
+.activity:last-of-type{ border-bottom:0; }
+.activity input[type=checkbox]{
+  appearance:none;-webkit-appearance:none;
+  width:20px;height:20px;flex-shrink:0;margin-top:2px;
+  border:1.5px solid var(--line-strong); border-radius:50%;
+  background:#fff; cursor:pointer; position:relative;
+  transition:background .15s,border-color .15s;
+}
+.activity input[type=checkbox]:checked{ background:var(--green); border-color:var(--green); }
+.activity input[type=checkbox]:checked::after{
+  content:'';position:absolute;left:6.5px;top:3.5px;
+  width:4px;height:9px;border:solid #fff;border-width:0 2px 2px 0;transform:rotate(45deg);
+}
+input[type=checkbox]:focus-visible{ outline:2px solid var(--green); outline-offset:2px; }
+
+.activity .time{
+  font-size:.75rem;font-weight:700;color:var(--green);
+  background:var(--green-bg);padding:3px 7px;border-radius:4px;
+  white-space:nowrap;flex-shrink:0;margin-top:1px;
+  font-variant-numeric:tabular-nums;
+}
+.activity .location{ font-size:.9375rem;font-weight:600;color:var(--text);flex:1;line-height:1.45; }
+.activity .location small{
+  display:block;font-weight:400;font-size:.8125rem;color:var(--text2);
+  margin-top:4px;line-height:1.55;
+}
+.activity.completed .time{ background:var(--bg-sub); color:var(--text3); }
+.activity.completed .location{ color:var(--text3); text-decoration:line-through; }
+.activity.completed .location small{ color:var(--text3); text-decoration:none; }
+.activity.pin{ cursor:pointer; }
+.activity.pin .location::after{ content:'›'; color:var(--text3); font-size:1.1rem; margin-left:5px; }
+.activity.focused{ background:var(--green-bg); margin:0 -16px; padding:14px 16px; }
+
+/* 이동 안내 */
+.route-info{
+  display:none; background:var(--bg-sub); border-radius:8px;
+  margin:0 0 14px 30px; padding:11px 13px;
+  font-size:.8125rem; color:var(--text2); line-height:1.7;
+}
+.route-info.show{ display:block; }
+.route-info b{ color:var(--text); font-weight:600; }
+
+/* 지도 */
+.map-container{
+  border:1px solid var(--line); border-radius:8px; overflow:hidden;
+  display:flex; flex-direction:column; height:100%; min-height:340px; background:#fff;
+}
+.map-header{
+  padding:11px 14px; font-size:.8125rem; font-weight:700; color:var(--text);
+  border-bottom:1px solid var(--line); flex-shrink:0;
+}
+.map-frame,#overview-map{ width:100%;flex:1;min-height:300px;border:0; }
+
+/* 목록 */
+.overview-info,.checklist-group{ margin-bottom:22px; }
+.overview-info h3,.checklist-group h3{
+  font-size:.9375rem; font-weight:700; color:var(--text);
+  padding:0 0 10px; border-bottom:2px solid var(--text); margin-bottom:0;
+}
+.location-item{
+  display:flex;justify-content:space-between;align-items:center;gap:10px;
+  padding:14px 0;border-bottom:1px solid var(--line);cursor:pointer;
+}
+.location-item:active{ background:var(--bg-sub); }
+.location-name{ font-size:.9375rem;font-weight:500;color:var(--text); }
+.copy-hint{ font-size:.75rem;color:var(--text3);white-space:nowrap; }
+.copy-hint::after{ content:'›';margin-left:5px;font-size:1.05rem; }
+.location-item.focused{ background:var(--green-bg);margin:0 -16px;padding:14px 16px; }
+
+.checklist-item{
+  display:flex;align-items:flex-start;gap:10px;
+  padding:13px 0;border-bottom:1px solid var(--line);
+}
+.checklist-item input[type=checkbox]{
+  appearance:none;-webkit-appearance:none;
+  width:20px;height:20px;flex-shrink:0;margin-top:2px;
+  border:1.5px solid var(--line-strong);border-radius:50%;
+  background:#fff;cursor:pointer;position:relative;
+}
+.checklist-item input[type=checkbox]:checked{ background:var(--green);border-color:var(--green); }
+.checklist-item input[type=checkbox]:checked::after{
+  content:'';position:absolute;left:6.5px;top:3.5px;
+  width:4px;height:9px;border:solid #fff;border-width:0 2px 2px 0;transform:rotate(45deg);
+}
+.checklist-item label{ font-size:.9375rem;color:var(--text);cursor:pointer;flex:1;font-weight:500; }
+.checklist-item label small{ display:block;font-size:.8125rem;color:var(--text2);margin-top:4px;font-weight:400;line-height:1.55; }
+.checklist-item.completed label{ color:var(--text3);text-decoration:line-through; }
+.checklist-item.completed label small{ color:var(--text3);text-decoration:none; }
+.buy-links{ display:flex;flex-wrap:wrap;gap:6px;margin-top:8px; }
+.buy-links a{
+  display:inline-block;font-size:.75rem;font-weight:600;
+  color:var(--green-dark);background:var(--green-bg);
+  padding:5px 10px;border-radius:14px;text-decoration:none;
+  letter-spacing:-.02em;
+}
+.buy-links a:active{ background:#D6F2E1; }
+.buy-links a::after{ content:' ›'; }
+.checklist-item.completed .buy-links a{ background:var(--bg-sub);color:var(--text3); }
+
+.progress-bar-wrap{
+  background:var(--line);border-radius:4px;height:8px;overflow:hidden;margin:0 0 20px;
+}
+#total-progress-bar{
+  height:100%;width:0%;background:var(--green);border-radius:4px;font-size:0;
+  transition:width .35s ease;
+}
+
+/* 하단 탭 */
+.subtab-bar{
+  position:sticky; top:0; z-index:99;
+  border-bottom:1px solid var(--line); padding-bottom:10px;
+  display:flex; gap:6px; padding:10px 16px 0;
+  background:var(--bg); overflow-x:auto; -webkit-overflow-scrolling:touch;
+}
+.subtab-bar::-webkit-scrollbar{ display:none; }
+.subtab{
+  flex:0 0 auto; padding:8px 15px; border:1px solid var(--line);
+  background:var(--bg); border-radius:18px; cursor:pointer;
+  font-family:inherit; font-size:.8125rem; font-weight:600;
+  color:var(--text2); letter-spacing:-.02em; transition:all .15s; white-space:nowrap;
+}
+.subtab.active{ background:var(--green); border-color:var(--green); color:#fff; }
+.subtab:focus-visible{ outline:2px solid var(--green); outline-offset:2px; }
+.subtab small{ display:block; font-size:.6875rem; font-weight:400; opacity:.8; margin-top:1px; }
+
+.phrase-group{ margin-bottom:22px; }
+.phrase-group h3{
+  font-size:.9375rem; font-weight:700; color:var(--text);
+  padding:0 0 10px; border-bottom:2px solid var(--text); margin-bottom:0;
+}
+.phrase{ padding:13px 0; border-bottom:1px solid var(--line); }
+.phrase .ko{ font-size:.875rem; color:var(--text2); font-weight:500; }
+.phrase .jp{ font-size:1rem; color:var(--text); font-weight:600; margin-top:5px; line-height:1.45; }
+.phrase .rd{
+  display:inline-block; font-size:.875rem; color:var(--green-dark);
+  background:var(--green-bg); padding:3px 9px; border-radius:5px;
+  margin-top:6px; font-weight:600;
+}
+.phrase .memo{ display:block; font-size:.75rem; color:var(--text3); margin-top:6px; line-height:1.5; }
+
+.tab-navigation{
+  position:fixed;bottom:0;left:0;right:0;z-index:200;
+  display:flex;background:#fff;border-top:1px solid var(--line);
+  padding-bottom:env(safe-area-inset-bottom);
+}
+.tab-btn{
+  flex:1;padding:13px 2px 14px;border:0;background:none;
+  font-family:inherit;font-size:.75rem;font-weight:600;letter-spacing:-.02em;
+  color:var(--text3);cursor:pointer;position:relative;transition:color .15s;
+}
+.tab-btn.active{ color:var(--green); }
+.tab-btn.active::after{
+  content:'';position:absolute;left:50%;transform:translateX(-50%);
+  bottom:7px;width:16px;height:2px;border-radius:1px;background:var(--green);
+}
+.tab-btn:focus-visible{ outline:2px solid var(--green);outline-offset:-4px; }
+
+@media (prefers-reduced-motion:reduce){ *{transition:none!important;} }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>간사이 3박 4일</h1>
+  <div class="trip-info">2026년 10월 16일(금) ~ 19일(월) · 오사카 · 교토 · 나라 · 우메다 숙박</div>
+</div>
+
+<div class="subtab-bar" id="day-subtabs" style="display:none">
+  <button class="subtab active" onclick="showDay(1)">1일차<small>도착 · 난바</small></button>
+  <button class="subtab" onclick="showDay(2)">2일차<small>나라 · 신세카이</small></button>
+  <button class="subtab" onclick="showDay(3)">3일차<small>교토</small></button>
+  <button class="subtab" onclick="showDay(4)">4일차<small>우메다 · 출발</small></button>
+</div>
+
+<!-- ================= 체크리스트 ================= -->
+<div class="day-section active" id="checklist">
+ <div class="day-header dayC">
+ <span>준비물 체크리스트</span>
+ <div class="progress-circle" id="progress-checklist">0%</div>
+ </div>
+ <div class="itinerary-section">
+  <div class="progress-bar-wrap"><div id="total-progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-label="준비 진행률"></div></div>
+
+    <div class="checklist-group">
+      <h3>교통편 예매 — 가장 먼저</h3>
+
+      <div class="checklist-item"><input type="checkbox" id="c-compare" data-category="checklist"><label for="c-compare"><b>1단계.</b> 클룩에서 하루카 <b>오사카역 구간</b> 실제 가격 확인<small>표시가 ₩11,000은 최저 구간(텐노지) 기준 — 오사카역은 더 비쌉니다<br><b>손익분기 ₩17,800</b> · 미만이면 개별 구매(2단계), 이상이면 패스(3단계)</small>
+        <div class="buy-links"><a href="https://www.klook.com/ko/activity/18400-jr-haruka-airport-express-train-tickets-osaka/" target="_blank" rel="noopener">클룩 하루카</a><a href="https://www.myrealtrip.com/offers/117411" target="_blank" rel="noopener">마이리얼트립</a><a href="https://www.kkday.com/ko/product/18940-kansai-airport-haruka-ticket-japan" target="_blank" rel="noopener">KKday</a></div>
+      </label></div>
+
+      <div class="checklist-item"><input type="checkbox" id="c-haruka-go" data-category="checklist"><label for="c-haruka-go"><b>2-A.</b> 하루카 편도 · 간사이공항 → 오사카역 (1일차 16:46)<small>구간을 <b>반드시 '간사이공항 ↔ 오사카역'</b>으로 지정<br><b>실물 티켓</b> 선택 — 발권기에서 좌석을 지정할 수 있습니다 (E-티켓은 교환 후 변경·환불 불가)<br>캐리어 2개니 짐칸 가까운 좌석으로</small></label></div>
+
+      <div class="checklist-item"><input type="checkbox" id="c-haruka-back" data-category="checklist"><label for="c-haruka-back"><b>2-B.</b> 하루카 편도 · 오사카역 → 간사이공항 (4일차 15:16)<small>왕복 모두 공항 기종점이라 외국인 할인 대상<br>후기에 "공항 방면 표는 교토역에서 못 탄다"는 불만이 있으니 <b>출발역을 오사카역으로</b></small></label></div>
+
+      <div class="checklist-item"><input type="checkbox" id="c-jrpass" data-category="checklist"><label for="c-jrpass"><b>3.</b> (하루카가 ₩17,800 이상일 때만) JR 서일본 간사이 패스 <b>4일권 ¥7,000</b><small>하루카 <b>지정석 2회</b> + 나라 왕복 + 교토 복귀 전부 포함<br>보너스로 한큐 · 게이한 · 교토지하철 1일권 3장 → 3일차 교통비 해결<br><b>반드시 실물 교환형</b> — E-티켓 패키지는 보너스 1일권이 빠집니다</small>
+        <div class="buy-links"><a href="https://www.klook.com/ko/activity/3276-4-day-jr-west-kansai-rail-pass-jr-pass/" target="_blank" rel="noopener">클룩</a><a href="https://experiences.myrealtrip.com/products/5541662" target="_blank" rel="noopener">마이리얼트립</a><a href="https://www.westjr.co.jp/travel-information/kr/tickets-passes/jrwest-rail-pass/kansai/" target="_blank" rel="noopener">JR서일본 공식</a></div>
+      </label></div>
+
+      <div class="checklist-item"><input type="checkbox" id="c-icoca" data-category="checklist"><label for="c-icoca"><b>4.</b> ICOCA (모바일 또는 현지 구매)<small>지하철 · 나라 버스 · 개별 구매 시 한큐 · 게이한까지 전부 이걸로<br>현지 창구에서 ¥2,000에 발급 가능 (하루카 발권기 옆에 창구 있음)</small></label></div>
+
+      <div class="checklist-item"><input type="checkbox" id="c-nopass" data-category="checklist"><label for="c-nopass">아래 패스는 구매하지 않음<small><b>간사이 레일웨이 패스</b> — JR 제외라 하루카·나라가 안 됨<br><b>오사카 주유패스</b> — 유료시설이 날짜별로 흩어져 있어 하루 단위와 안 맞음<br><b>한큐·게이한 단품 패스</b> — 실사용액(¥690 / ¥190)이 패스보다 쌈</small></label></div>
+
+      <div class="checklist-item"><input type="checkbox" id="c-stamp" data-category="checklist"><label for="c-stamp">입국심사는 <b>유인 심사대</b>로<small>무인 자동심사는 여권 도장을 못 받는데, JR 패스류는 <b>단기 방문 도장이 필수</b>입니다<br>IC칩 없는 여권은 발권기 스캔이 안 되니 창구에서 수령</small></label></div>
+
+      <div class="checklist-item"><input type="checkbox" id="c-ticket-machine" data-category="checklist"><label for="c-ticket-machine">발권 방법 숙지 — <b>녹색 발권기</b><small>흰색 발권기는 공항→시내 방향만 가능하니 녹색을 쓰세요<br>'예약한 티켓의 수령' → QR 스캔 → 여권 스캔 → 실물 수령 → 첫 화면에서 지정석 예약</small></label></div>
+    </div>
+
+    <div class="checklist-group">
+      <h3>예약 · 사전 확인</h3>
+      <div class="checklist-item"><input type="checkbox" id="c-hotel" data-category="checklist"><label for="c-hotel">퀸테사 호텔 오사카 우메다 코믹앤북스 예약 확인<small>기타구 쓰루노초 2-15 · 체크인 15:00<br>짐 보관은 체크인 전·체크아웃 후 모두 가능 (후기 확인) — 4일차 전제 조건 충족</small></label></div>
+      <div class="checklist-item"><input type="checkbox" id="c-cruise" data-category="checklist"><label for="c-cruise">톤보리 리버크루즈 (1일차 20:30)<small>11:00~21:00 · 30분 간격 · <b>20:30편이 막차</b> · 타자에몬바시 승선장<br>미리 발권해두면 대기 없이 탑니다</small></label></div>
+      <div class="checklist-item"><input type="checkbox" id="c-closing" data-category="checklist"><label for="c-closing">가게 마감시간 메모<small>쿠시카츠 고에몬 23:00 · 야에카츠 20:30 · 에치겐 19:15 · 무겐 라멘 24:30<br>리버크루즈 20:30 막차 · 오쿠탄 기요미즈 17:30</small></label></div>
+      <div class="checklist-item"><input type="checkbox" id="c-hankyu-coupon" data-category="checklist"><label for="c-hankyu-coupon">한큐 백화점 5% 게스트 쿠폰 (여권 지참)<small>B1 인포메이션 또는 1층 인포메이션 센터 · 4일차 4시간 쇼핑에 적용</small></label></div>
+      <div class="checklist-item"><input type="checkbox" id="c-lastrain" data-category="checklist"><label for="c-lastrain">막차 — 확인 완료, 세 구간 모두 여유 있음<small><b>1일차</b> 난바 → 나카쓰 · 우리 21:50 / 막차 00:10경 → <b>2시간 20분 여유</b><br><b>2일차</b> 도부쓰엔마에 → 나카쓰 · 우리 21:00 / <b>막차 00:05</b>(신오사카행) → <b>3시간 여유</b><br><b>3일차</b> JR 이나리 → 오사카 · 우리 18:45 / 막차 23시대 → 4시간 이상 여유<br>도부쓰엔마에 토요일 심야편: 23:33 · 23:42 · 23:53 · 00:05 (10분 간격이 아니니 놓치면 손해)</small></label></div>
+    </div>
+
+    <div class="checklist-group">
+      <h3>서류 · 결제</h3>
+      <div class="checklist-item"><input type="checkbox" id="c-passport" data-category="checklist"><label for="c-passport">여권 유효기간 6개월 이상<small>한큐 쿠폰 · 면세 · 하루카 발권에 전부 필요</small></label></div>
+      <div class="checklist-item"><input type="checkbox" id="c-vjw" data-category="checklist"><label for="c-vjw">Visit Japan Web 사전 등록<small>입국심사 + 세관신고 QR을 미리 받아둡니다 · 1일차 입국심사 1시간 배정이 여기서 갈림<br><b>단, 심사는 유인 창구로</b> — 자동화 게이트는 여권 도장을 안 찍어줍니다</small>
+        <div class="buy-links"><a href="https://services.digital.go.jp/en/visit-japan-web/" target="_blank" rel="noopener">Visit Japan Web</a></div>
+      </label></div>
+      <div class="checklist-item"><input type="checkbox" id="c-checkin" data-category="checklist"><label for="c-checkin">항공권 온라인 체크인</label></div>
+      <div class="checklist-item"><input type="checkbox" id="c-insurance" data-category="checklist"><label for="c-insurance">여행자 보험</label></div>
+      <div class="checklist-item"><input type="checkbox" id="c-money" data-category="checklist"><label for="c-money">엔화 환전 / 트래블카드<small>교통비 약 ¥9,400 + 입장료 약 ¥4,000 + 식비</small></label></div>
+      <div class="checklist-item"><input type="checkbox" id="c-esim" data-category="checklist"><label for="c-esim">eSIM — 3박4일이면 <b>매일 2GB, ₩7,000~9,000</b>이 적정선<small>구글맵을 종일 켜는 일정이라 무제한까지는 불필요 · 대용량 요금제는 낭비<br>포켓와이파이(하루 ₩3,000~4,900)는 기기 충전·분실보험까지 더하면 결국 비슷해집니다<br><b>출국 전 집에서 QR 등록하고 "활성화 끔" 상태로</b> 두세요 — 등록에 와이파이가 필요합니다</small>
+        <div class="buy-links"><a href="https://www.klook.com/ko/activity/109393-japan-esim-high-speed-internet-qr-code-voucher/" target="_blank" rel="noopener">클룩 eSIM</a><a href="https://www.dosirakesim.com/" target="_blank" rel="noopener">도시락 eSIM</a><a href="https://experiences.myrealtrip.com/products/3443071" target="_blank" rel="noopener">마이리얼트립</a></div>
+      </label></div>
+    </div>
+
+    <div class="checklist-group">
+      <h3>현장 지출 (1인)</h3>
+      <div class="checklist-item"><input type="checkbox" id="c-fee1" data-category="checklist"><label for="c-fee1">2일차 · 동대사 ¥800 · 시카센베 ¥200 · 나라 버스 ¥220</label></div>
+      <div class="checklist-item"><input type="checkbox" id="c-fee2" data-category="checklist"><label for="c-fee2">3일차 · 기요미즈데라 ¥500<small>후시미이나리 · 대나무숲 · 야사카신사는 무료</small></label></div>
+      <div class="checklist-item"><input type="checkbox" id="c-fee3" data-category="checklist"><label for="c-fee3">1일차 · 리버크루즈 ¥1,500<small>4일차 우메키타 공원은 무료</small></label></div>
+    </div>
+
+    <div class="checklist-group">
+      <h3>짐</h3>
+      <div class="checklist-item"><input type="checkbox" id="c-shoes" data-category="checklist"><label for="c-shoes">편한 운동화<small>3일차 교토 돌바닥 비탈 10km — 이 여행의 성패가 여기서 갈립니다</small></label></div>
+      <div class="checklist-item"><input type="checkbox" id="c-windbreaker" data-category="checklist"><label for="c-windbreaker">바람막이<small>10월 밤 나라 숲길 · 후시미이나리 산길 모두 쌀쌀함</small></label></div>
+      <div class="checklist-item"><input type="checkbox" id="c-bag" data-category="checklist"><label for="c-bag">앞으로 멜 수 있는 가방<small>2일차 사슴이 가방을 뜯습니다 · 10월은 발정기라 더 주의</small></label></div>
+      <div class="checklist-item"><input type="checkbox" id="c-luggage" data-category="checklist"><label for="c-luggage">24인치 캐리어 2개 무게 확인<small>4일차 한큐 백화점 쇼핑분 여유 남겨두기</small></label></div>
+      <div class="checklist-item"><input type="checkbox" id="c-rain" data-category="checklist"><label for="c-rain">우산 / 우비</label></div>
+      <div class="checklist-item"><input type="checkbox" id="c-battery" data-category="checklist"><label for="c-battery">보조배터리 · 멀티탭<small>지도를 종일 켜두면 배터리가 빨리 닳습니다</small></label></div>
+      <div class="checklist-item"><input type="checkbox" id="c-medicine" data-category="checklist"><label for="c-medicine">상비약 · 파스<small>3일차 다음날 다리가 옵니다</small></label></div>
+    </div>
+ </div>
+</div>
+
+
+<!-- ================= DAY 1 ================= -->
+<div class="day-section" id="day1">
+ <div class="day-header day1">
+ <span>1일차 · 10월 16일 금 · 도착 · 난바</span>
+ <div class="progress-circle" id="progress-day1">0%</div>
+ </div>
+ <div class="itinerary-map-container">
+ <div class="itinerary-section">
+ <div class="day-note">술 <b>오늘 밤이 제대로 마셔도 되는 유일한 날</b>입니다. 내일은 나라행이라 열차에서 회복되고, 모레(교토)는 09:00을 진짜로 지켜야 합니다.<br>전철 <b>공항 이동은 하루카</b> — 환승 0회, 지정석 + 짐칸. 오사카역에서 호텔까지 도보 10분입니다.<br>휴식 비행 직후라 크루즈를 넣었습니다. 앉아서 야경을 보는 20분이 첫날 체력 관리에 유리합니다.</div>
+ <div class="current-route" id="current-route-day1">일정을 체크하면 이동 경로가 표시됩니다</div>
+
+ <div class="activity pin" data-location="인천공항" data-prev="">
+ <input type="checkbox" id="d1-1" data-day="1">
+ <span class="time">~12:30</span>
+ <span class="location">인천공항 도착 · 수속<small>출발 90분 전 도착 권장</small></span>
+ </div>
+
+ <div class="activity pin" data-location="간사이공항" data-prev="인천공항">
+ <input type="checkbox" id="d1-2" data-day="1">
+ <span class="time">13:55</span>
+ <span class="location">항공 인천 출발 → 간사이공항 15:40 도착<small>비행 약 1시간 45분 · 시차 없음</small></span>
+ </div>
+ <div class="route-info" id="route-d1-2">항공 인천공항 → KIX (약 1시간 45분) · 터미널은 항공사별로 다르니 사전 확인</div>
+
+ <div class="activity" data-location="간사이공항" data-prev="간사이공항">
+ <input type="checkbox" id="d1-3" data-day="1">
+ <span class="time">15:40-16:40</span>
+ <span class="location">수속 입국심사 · 수하물 수령<small>Visit Japan Web 등록되어 있으면 훨씬 빠름</small></span>
+ </div>
+
+ <div class="activity pin" data-location="우메다숙소" data-prev="간사이공항">
+        <input type="checkbox" id="d1-4" data-day="1">
+        <span class="time">16:46-17:50</span>
+        <span class="location">전철 하루카 → JR 오사카역 → 호텔<small>환승 0회 · 지정석 + 짐칸 · 캐리어 2개에 이게 결정적</small></span>
+      </div>
+      <div class="route-info" id="route-d1-4">전철 하루카 KIX → 오사카역 · 47분 · ¥2,410 (앱 예약 시 할인) · 매시 :16 / :46 출발<br>도보 <b>우메키타구치</b>로 나와 호텔까지 도보 10분<br>주의 하루카는 <b>우메키타 지하 승강장</b>에 섭니다. 지상까지 5~8분 더 걸린다고 보세요<br>제외 간쿠쾌속(¥1,210)은 17시대 퇴근 러시에 짐칸도 없어서 뺐습니다 · 라피트는 난바역 환승이 커서 절약분을 다 까먹습니다</div>
+
+ <div class="activity" data-location="우메다숙소" data-prev="우메다숙소">
+ <input type="checkbox" id="d1-5" data-day="1">
+ <span class="time">18:00-18:40</span>
+ <span class="location">체크인 · 짐 풀기 · 휴식 잠깐 휴식<small>이후 3박 내내 캐리어는 방에 고정</small></span>
+ </div>
+
+ <div class="activity pin" data-location="에비스바시" data-prev="우메다숙소">
+ <input type="checkbox" id="d1-6" data-day="1">
+ <span class="time">18:50-19:20</span>
+ <span class="location">에비스바시 · 글리코 간판 (첫 인사)<small>30분 — 다리 위에서 인증샷만</small></span>
+ </div>
+ <div class="route-info" id="route-d1-6">전철 미도스지선 우메다 → 난바 · 9분 · ¥240<br>도보 <b>난바역 14번 출구</b>에서 도보 5분이면 에비스바시<br>팁 진짜 사진은 21시에 다시 찍습니다 (아래 참조) — 지금은 가볍게</div>
+
+ <div class="activity pin" data-location="도톤보리" data-prev="에비스바시">
+ <input type="checkbox" id="d1-7" data-day="1">
+ <span class="time">19:20-20:20</span>
+ <span class="location">식사 도톤보리 저녁<small>60분 — 타코야키 · 오코노미야키 · 쿠시카츠</small></span>
+ </div>
+ <div class="route-info" id="route-d1-7">도보 도톤보리는 도톤보리바시~닛폰바시 사이 <b>600m 먹자골목</b> · 기계식 게 간판(가니도라쿠), 3층 높이 복어 등불이 이 구간에<br>간식 리쿠로 아저씨 치즈케이크는 기념품용으로 인기</div>
+
+ <div class="activity pin" data-location="리버크루즈" data-prev="도톤보리">
+        <input type="checkbox" id="d1-8" data-day="1">
+        <span class="time">20:30-20:50</span>
+        <span class="location">톤보리 리버크루즈<small>20분 · 수면 높이라 높이 부담 없음 · 앉아서 네온 감상</small></span>
+      </div>
+      <div class="route-info" id="route-d1-8">유람선 약 20분 운항 · 11:00~21:00 · 30분 간격 · 타자에몬바시 승선장 · ¥1,500<br>시각 <b>20:30편이 사실상 막차</b>입니다. 발권은 미리 (주유패스 소지 시 무료지만 당일 승선권 교환 필요)<br>팁 걷느라 지친 다리를 쉬면서 도톤보리 네온을 훑는 구간 — 첫날 비행 직후에 딱 맞습니다<br>제외 에비스타워 관람차(77m, 바닥 투명)는 뺐습니다</div>
+
+ <div class="activity pin" data-location="에비스바시" data-prev="리버크루즈">
+ <input type="checkbox" id="d1-9" data-day="1">
+ <span class="time">20:50-21:15</span>
+ <span class="location">리버워크에서 글리코 야경 <small>25분 — 오늘의 인생샷 포인트</small></span>
+ </div>
+ <div class="route-info" id="route-d1-9">팁 <b>다리 위 말고 다리 아래 산책로로 내려가세요.</b> 훨씬 한적하고 글리코상 배경으로 전신사진이 예쁘게 나옵니다<br>팁 <b>밤 8시 이후 간판에 불이 들어왔을 때</b>가 가장 예쁩니다 — 그래서 이 시간에 배치</div>
+
+ <div class="activity pin" data-location="호젠지요코초" data-prev="에비스바시">
+ <input type="checkbox" id="d1-10" data-day="1">
+ <span class="time">21:15-22:30</span>
+ <span class="location">호젠지 요코초 술자리<small>75분 — 등롱 불빛, 돌바닥 골목</small></span>
+ </div>
+ <div class="route-info" id="route-d1-10">도보 도톤보리 → 센니치마에 상점가 → 호젠지 요코초 · 도보 5분<br>팁 쿠시카츠 · 오뎅 · 장어구이 · 로바타야키 · 야키토리 중심 · 네온 거리 한복판인데 한 발 들어서면 소란이 거짓말처럼 사라집니다<br>팁 센니치마에는 아케이드라 비 와도 술집 순례 가능</div>
+
+ <div class="activity pin" data-location="나카쓰역" data-prev="호젠지요코초">
+ <input type="checkbox" id="d1-11" data-day="1">
+ <span class="time">22:30-23:00</span>
+ <span class="location">우메다 복귀</span>
+ </div>
+ <div class="route-info" id="route-d1-11">전철 미도스지선 난바 → <b>나카쓰</b> · 11분 · ¥290 → 도보 6분<br>팁 우메다에서 내리면 도보 9분인데 나카쓰는 6분이고, <b>역이 훨씬 한산</b>합니다. 술 마신 밤엔 이쪽이 편합니다 (막차 24시경)</div>
+ </div>
+ <div class="map-section">
+ <div class="map-container">
+ <div class="map-header">1일차 동선</div>
+ <iframe class="map-frame" id="map-day1" src="https://www.google.com/maps?q=34.6690,135.5015&z=15&output=embed"></iframe>
+ </div>
+ </div>
+ </div>
+</div>
+
+<!-- ================= DAY 2 ================= -->
+<div class="day-section" id="day2">
+ <div class="day-header day2">
+ <span>2일차 · 10월 17일 토 · 나라 · 신세카이</span>
+ <div class="progress-circle" id="progress-day2">0%</div>
+ </div>
+ <div class="itinerary-map-container">
+ <div class="itinerary-section">
+ <div class="day-note">식사 저녁은 <b>1차 쿠시카츠 → 쓰텐카쿠 야경 → 2차 라멘</b> 3단 구성. 전부 쓰텐카쿠 반경 400m 안이라 걸어서 이동합니다.<br> <b>나라 체류 4시간 35분</b>으로 줄였습니다 — 후기들이 "사진·식사 포함 4~5시간이면 충분"이라고 입을 모읍니다. 7시간은 늘어집니다.<br>휴식 대신 <b>오후에 호텔에서 1시간 15분 쉽니다.</b> 첫날 밤 술 + 나라 도보의 회복 시간이자, 교토 종일 전날의 체력 비축입니다.<br> 불꽃 인파는 전부 북쪽 — 저녁은 정반대인 남쪽 신세카이로.</div>
+ <div class="current-route" id="current-route-day2">일정을 체크하면 이동 경로가 표시됩니다</div>
+
+ <div class="activity" data-location="우메다숙소" data-prev="">
+ <input type="checkbox" id="d2-1" data-day="2">
+ <span class="time">08:30-09:00</span>
+ <span class="location">기상 · 조식</span>
+ </div>
+
+ <div class="activity pin" data-location="JR나라역" data-prev="우메다숙소">
+ <input type="checkbox" id="d2-2" data-day="2">
+ <span class="time">09:20-10:15</span>
+ <span class="location">전철 JR 나라역 도착<small>55분 — 환승 없는 직행, 열차에서 회복</small></span>
+ </div>
+ <div class="route-info" id="route-d2-2">전철 JR 오사카역 → 나라 · 야마토지쾌속 직행 · 약 55분 · ¥820 · 시간당 4대</div>
+
+ <div class="activity pin" data-location="나라공원" data-prev="JR나라역">
+ <input type="checkbox" id="d2-3" data-day="2">
+ <span class="time">10:35-11:25</span>
+ <span class="location">나라공원 사슴 <small>50분 — 오전 9~11시가 사슴 골든타임</small></span>
+ </div>
+ <div class="route-info" id="route-d2-3">버스 <b>반드시 버스</b> — JR 나라역에서 도보 20분(긴테쓰역은 5분). 시내순환버스 약 10분 · ¥220<br>팁 시카센베 ¥200 · 머리 위로 들면 고개 숙여 인사 · 전용 과자만 급여 · 쓰레기통 없으니 되가져오기<br>주의 10월은 발정기 — 뿔 달린 수사슴과는 거리 두기</div>
+
+ <div class="activity pin" data-location="도다이지" data-prev="나라공원">
+ <input type="checkbox" id="d2-4" data-day="2">
+ <span class="time">11:30-12:30</span>
+ <span class="location">동대사 (도다이지) 대불전<small>60분 — 입장료 ¥800</small></span>
+ </div>
+ <div class="route-info" id="route-d2-4">도보 나라공원 → 도다이지 도보 5분 · 대불 옆 기둥 구멍 통과하면 액막이 속설</div>
+
+ <div class="activity" data-location="나라공원" data-prev="도다이지">
+ <input type="checkbox" id="d2-5" data-day="2">
+ <span class="time">12:30-12:50</span>
+ <span class="location">휴식 휴식 — 나라공원 벤치 · 카페 휴식<small>20분 — 여기까지 이미 6,000보</small></span>
+ </div>
+
+ <div class="activity pin" data-location="가스가타이샤" data-prev="나라공원">
+ <input type="checkbox" id="d2-6" data-day="2">
+ <span class="time">12:50-13:30</span>
+ <span class="location">가스가타이샤 숲길<small>40분 — 등롱 참배길만 걷기 (회랑 밖 무료)</small></span>
+ </div>
+ <div class="route-info" id="route-d2-6">도보 도다이지 → 가스가타이샤 숲길 도보 15분 · 사슴이 가장 많은 구간<br>팁 본전 특별참배(¥700)는 생략 — 숲길 자체가 목적</div>
+
+ <div class="activity pin" data-location="나라마치" data-prev="가스가타이샤">
+ <input type="checkbox" id="d2-7" data-day="2">
+ <span class="time">13:40-14:40</span>
+ <span class="location">식사 나라마치 점심 휴식<small>60분 — 가마메시 · 소면 · 가키노하즈시</small></span>
+ </div>
+ <div class="route-info" id="route-d2-7">도보 가스가타이샤 → 나라마치 도보 20분 · 에도시대 마치야 골목</div>
+
+ <div class="activity pin" data-location="고후쿠지" data-prev="나라마치">
+ <input type="checkbox" id="d2-8" data-day="2">
+ <span class="time">14:40-15:10</span>
+ <span class="location">고후쿠지 5층탑 · 히가시무키 상점가<small>30분 — 역 가는 길목이라 낭비 없음</small></span>
+ </div>
+ <div class="route-info" id="route-d2-8">도보 나라마치 → 고후쿠지 → 히가시무키 상점가 → JR 나라역 · 일직선 도보 25분 · <b>이스이엔 정원은 생략</b>(시간 대비 약함)</div>
+
+ <div class="activity pin" data-location="우메다숙소" data-prev="고후쿠지">
+ <input type="checkbox" id="d2-9" data-day="2">
+ <span class="time">15:20-16:15</span>
+ <span class="location">전철 오사카 복귀<small>불꽃 인파는 아직 회장으로 가는 중 — 역방향</small></span>
+ </div>
+ <div class="route-info" id="route-d2-9">전철 JR 나라 → 오사카역 · 야마토지쾌속 · 약 55분 · ¥820</div>
+
+ <div class="activity" data-location="우메다숙소" data-prev="우메다숙소">
+ <input type="checkbox" id="d2-10" data-day="2">
+ <span class="time">16:30-17:45</span>
+ <span class="location">휴식 호텔 휴식 <small>75분 — 샤워하고 발 쉬기. 내일 교토가 이 날의 진짜 이유</small></span>
+ </div>
+
+ <div class="activity pin" data-location="고에몬" data-prev="우메다숙소">
+ <input type="checkbox" id="d2-11" data-day="2">
+ <span class="time">18:30-20:00</span>
+ <span class="location">식사 1차 · 쿠시카츠 고에몬 (고에몬)<small>90분 · 구글 4.6 (622) · 토요일 ~23:00</small></span>
+ </div>
+ <div class="route-info" id="route-d2-11">전철 미도스지선 우메다 → 도부쓰엔마에 · 약 15분 · ¥290 → 도보 5분<br>식사 <b>소스 두 번 찍기 금지</b> — 공용입니다. 양배추로 떠서 뿌리세요 · <b>1인 1음료 필수</b><br>팁 15꽂이 세트 + 도테야키(소힘줄 된장조림)면 2인 충분 · 다국어 메뉴 있음<br>대안: 다루마 총본점(4.1, ~22:30, 원조 계보) / 야에카츠(4.0, <b>~20:30 마감</b>, 현지인 픽) / 에치겐(4.5, <b>~19:15 마감</b>, 주인이 한국어로 "찍어, 안 찍어")</div>
+
+ <div class="activity pin" data-location="신세카이" data-prev="고에몬">
+ <input type="checkbox" id="d2-12" data-day="2">
+ <span class="time">20:00-20:40</span>
+ <span class="location">쓰텐카쿠 야경 · 잔잔요코초 산책<small>40분 — 소화도 시킬 겸 천천히</small></span>
+ </div>
+ <div class="route-info" id="route-d2-12">팁 <b>쓰텐카쿠 전망대(103m)는 올라가지 않습니다.</b> 신세카이 거리에서 올려다보는 네온 간판과 타워 야경이 이 동네의 핵심이라 아래에서 충분합니다</div>
+
+ <div class="activity pin" data-location="무겐라멘" data-prev="신세카이">
+ <input type="checkbox" id="d2-13" data-day="2">
+ <span class="time">20:40-21:40</span>
+ <span class="location">식사 2차 · 무겐 라멘 (신이마미야역앞)<small>60분 · 구글 4.8 (730) · 토요일 ~24:30 · 2인 ¥2,700(맥주 포함)</small></span>
+ </div>
+ <div class="route-info" id="route-d2-13">도보 쓰텐카쿠 → 신이마미야역 앞 도보 7분 · 튀김 뒤 국물 마무리<br>대안: 신세카이 야키니쿠(4.4, ~23:00, 저렴·무한리필) / 와규 버거&라멘 쓰텐카쿠점(4.8, ~23:00, 할랄·비건 대응, 비쌈)</div>
+
+ <div class="activity pin" data-location="나카쓰역" data-prev="무겐라멘">
+ <input type="checkbox" id="d2-14" data-day="2">
+ <span class="time">21:50-22:10</span>
+ <span class="location">호텔 복귀 (나카쓰역 하차)<small>불꽃 귀가 피크(20:00~21:30)와 노선이 겹치지 않음</small></span>
+ </div>
+ <div class="route-info" id="route-d2-14">전철 미도스지선 도부쓰엔마에 → <b>나카쓰</b> · 약 17분 · ¥290 → 도보 6분<br>시각 <b>미도스지선 막차는 자정 전후</b> — 2시간 가까이 여유가 있습니다. 정확한 시각은 구글맵/Osaka Metro 앱에서 당일 확인<br>주의 자정 넘기면 택시뿐이고 신세카이 → 우메다는 ¥3,000 이상</div>
+ </div>
+ <div class="map-section">
+ <div class="map-container">
+ <div class="map-header">2일차 동선</div>
+ <iframe class="map-frame" id="map-day2" src="https://www.google.com/maps?q=34.7000,135.6600&z=10&output=embed"></iframe>
+ </div>
+ </div>
+ </div>
+</div>
+
+<!-- ================= DAY 3 ================= -->
+<div class="day-section" id="day3">
+ <div class="day-header day3">
+ <span>3일차 · 10월 18일 일 · 교토</span>
+ <div class="progress-circle" id="progress-day3">0%</div>
+ </div>
+ <div class="itinerary-map-container">
+ <div class="itinerary-section">
+ <div class="day-note"> <b>니넨자카·산넨자카에 90분을 줬습니다.</b> 여긴 통과 구간이 아니라 <b>상점 구경이 목적</b>이니까요. 기요미즈데라를 75분으로 줄여서 만든 시간입니다.<br>시각 <b>09:00 출발은 협상 불가.</b> 텐류지 생략, 고다이지는 입장 없이 통과 — 이 둘을 넣으면 산넨자카 90분이 날아갑니다.<br>휴식 오늘 도보 10km 이상. 니시키(점심 60분) · 츠지리(20분) · 게이한 열차(10분)가 앉는 구간입니다.</div>
+ <div class="current-route" id="current-route-day3">일정을 체크하면 이동 경로가 표시됩니다</div>
+
+ <div class="activity pin" data-location="한큐아라시야마역" data-prev="">
+ <input type="checkbox" id="d3-1" data-day="3">
+ <span class="time">09:00-09:50</span>
+ <span class="location">전철 아라시야마 이동 휴식<small>50분 — 한큐 투어리스트 패스 ¥700 쓰는 날</small></span>
+ </div>
+ <div class="route-info" id="route-d3-1">도보 호텔 → 한큐 오사카우메다역 <b>도보 5분</b> (숙소에서 가장 가까운 역)<br>전철 한큐 오사카우메다 → 가쓰라 환승 → 아라시야마 · 약 45분 · ¥410</div>
+
+ <div class="activity pin" data-location="도게쓰교" data-prev="한큐아라시야마역">
+ <input type="checkbox" id="d3-2" data-day="3">
+ <span class="time">09:50-10:10</span>
+ <span class="location">도게쓰교 · 가쓰라강<small>20분 — 사진만</small></span>
+ </div>
+ <div class="route-info" id="route-d3-2">도보 한큐 아라시야마역 → 도게쓰교 도보 8분</div>
+
+ <div class="activity pin" data-location="아라시야마대나무숲" data-prev="도게쓰교">
+ <input type="checkbox" id="d3-3" data-day="3">
+ <span class="time">10:10-11:00</span>
+ <span class="location">대나무숲 · 노노미야신사<small>50분 — 400m 산책로, 편도 10~15분</small></span>
+ </div>
+ <div class="route-info" id="route-d3-3">도보 도게쓰교 → 치쿠린노미치(대나무숲) 도보 12분<br>주의 10시 이후 혼잡 시작 — 들어가자마자 <b>북쪽 오코치산소 방향</b>까지 걸어가면 사람이 확 줄어듭니다<br>제외 텐류지(¥800, 1시간)는 생략</div>
+
+ <div class="activity pin" data-location="니시키시장" data-prev="아라시야마대나무숲">
+ <input type="checkbox" id="d3-4" data-day="3">
+ <span class="time">11:50-12:50</span>
+ <span class="location">식사 니시키 시장 — 점심 휴식<small>60분 — "교토의 부엌" 400m 아케이드</small></span>
+ </div>
+ <div class="route-info" id="route-d3-4">전철 한큐 아라시야마 → 가쓰라 → 교토카와라마치 · 약 35분 → 도보 5분</div>
+
+ <div class="activity pin" data-location="야사카신사" data-prev="니시키시장">
+ <input type="checkbox" id="d3-5" data-day="3">
+ <span class="time">12:50-13:30</span>
+ <span class="location">기온 시라카와 · 하나미코지 → 야사카신사<small>40분 — 걸으면서 보는 구간</small></span>
+ </div>
+ <div class="route-info" id="route-d3-5">도보 니시키 시장 → 가모강 → 기온 시라카와 → 하나미코지 → 야사카신사 · 도보 25분 · 일요일 교토 버스는 만원이라 걷는 게 빠릅니다</div>
+
+ <div class="activity pin" data-location="고다이지" data-prev="야사카신사">
+ <input type="checkbox" id="d3-6" data-day="3">
+ <span class="time">13:30-13:50</span>
+ <span class="location">카페 네네노미치 · 다료 츠지리 휴식<small>20분 — 앉아서 말차 한 잔</small></span>
+ </div>
+ <div class="route-info" id="route-d3-6">도보 야사카신사 → 네네노미치 → 고다이지 앞 도보 10분 · <b>고다이지는 입장 없이 통과</b><br>카페 다료 츠지리 고다이지점 — 그린티 ¥310 / 말차 오레 ¥420 · 산넨자카 오르막 전 마지막 휴식</div>
+
+ <div class="activity pin" data-location="산넨자카" data-prev="고다이지">
+ <input type="checkbox" id="d3-7" data-day="3">
+ <span class="time">13:50-15:20</span>
+ <span class="location">니넨자카 → 산넨자카 상점 구경 <small>90분 — 오늘의 메인. 기요미즈야키 · 교토 기념품 · 마치야 상점</small></span>
+ </div>
+ <div class="route-info" id="route-d3-7">도보 야사카노토(법관사 오층탑) → 니넨자카 → 산넨자카 · 오르막 방향이 자연스러움<br>간식 오쿠탄 기요미즈 두유흑당빙수 ¥500 (11:00~17:30, 목요일 휴무) · 기요미즈 쿄아미 야츠하시 슈크림 ¥300 · 분노스케차야 와라비모찌+소프트크림<br>휴식 % 아라비카 교토 히가시야마는 야사카노토 바로 옆<br>주의 <b>돌바닥 비탈이 계속됩니다</b> — 편한 신발이 오늘의 성패</div>
+
+ <div class="activity pin" data-location="기요미즈데라" data-prev="산넨자카">
+ <input type="checkbox" id="d3-8" data-day="3">
+ <span class="time">15:20-16:35</span>
+ <span class="location">기요미즈데라 (청수사)<small>75분 — 본당 무대 · 오토와 폭포 · 지슈신사 · ¥500</small></span>
+ </div>
+ <div class="route-info" id="route-d3-8">도보 산넨자카 → 기요미즈데라 도보 5분 · 교토에서 가장 혼잡한 구역<br>주의 본당 무대는 절벽 위 약 13m 높이입니다. 난간이 있고 바닥도 넓어 걷는 데 문제는 없지만, <b>가장자리 대신 안쪽으로 다니면 편합니다.</b> 무대에 안 올라가도 오토와 폭포·지슈신사·경내 단풍은 그대로 볼 수 있습니다</div>
+
+ <div class="activity pin" data-location="후시미이나리" data-prev="기요미즈데라">
+ <input type="checkbox" id="d3-9" data-day="3">
+ <span class="time">17:10-18:30</span>
+ <span class="location">후시미이나리 (여우신사) <small>80분 — 일몰 17:20 야간 조명까지 한 번에</small></span>
+ </div>
+ <div class="route-info" id="route-d3-9">도보 하산 20분 → 전철 게이한 기요미즈고조 → 후시미이나리 약 10분 → 도보 5분<br>시각 요쓰쓰지 왕복 약 1시간 · 정상 일주는 2시간이라 <b>요쓰쓰지에서 회차</b><br>팁 어두워지면 도리이에 조명이 켜지고 인파가 빠집니다 — 사진은 이때가 최고<br>주의 부적·기념품 가게는 밤에 닫히니 도착 직후에 · 참배 무료, 24시간 개방</div>
+
+ <div class="activity pin" data-location="우메다숙소" data-prev="후시미이나리">
+ <input type="checkbox" id="d3-10" data-day="3">
+ <span class="time">18:45-19:35</span>
+ <span class="location">전철 오사카 복귀 휴식<small>45분 — 앉아서 회복</small></span>
+ </div>
+ <div class="route-info" id="route-d3-10">전철 JR 이나리 → 교토역 (나라선 5분) → 신쾌속 → JR 오사카역 (29분) · 총 약 45분 · ¥590</div>
+
+ <div class="activity" data-location="우메다숙소" data-prev="우메다숙소">
+ <input type="checkbox" id="d3-11" data-day="3">
+ <span class="time">19:45-21:30</span>
+ <span class="location">술 우메다 저녁<small>내일 09:30 체크아웃 — 오늘은 적당히</small></span>
+ </div>
+ </div>
+ <div class="map-section">
+ <div class="map-container">
+ <div class="map-header">3일차 동선</div>
+ <iframe class="map-frame" id="map-day3" src="https://www.google.com/maps?q=35.0000,135.7200&z=12&output=embed"></iframe>
+ </div>
+ </div>
+ </div>
+</div>
+
+<!-- ================= DAY 4 ================= -->
+<div class="day-section" id="day4">
+ <div class="day-header day4">
+ <span>4일차 · 10월 19일 월 · 우메다 · 출발</span>
+ <div class="progress-circle" id="progress-day4">0%</div>
+ </div>
+ <div class="itinerary-map-container">
+ <div class="itinerary-section">
+ <div class="day-note">쇼핑 <b>한큐 백화점 4시간</b>이 오늘의 메인. 점심도 여기서 해결합니다. <b>오사카성은 제외</b>했습니다.<br>도보 오후 일정은 전부 <b>한큐 반경 500m 도보권</b>이라 짐 픽업·공항 이동에 여유가 있습니다.<br> 우메다 스카이빌딩은 뺐습니다 — 왕복 도보 24분에 대기가 길어질 수 있어 마지막 날에 걸 도박이 아닙니다.</div>
+ <div class="current-route" id="current-route-day4">일정을 체크하면 이동 경로가 표시됩니다</div>
+
+ <div class="activity" data-location="우메다숙소" data-prev="">
+ <input type="checkbox" id="d4-1" data-day="4">
+ <span class="time">08:30-09:40</span>
+ <span class="location">기상 · 조식<small>어제 교토 10km의 회복 시간</small></span>
+ </div>
+
+ <div class="activity" data-location="우메다숙소" data-prev="우메다숙소">
+ <input type="checkbox" id="d4-2" data-day="4">
+ <span class="time">09:40-10:00</span>
+ <span class="location">짐 체크아웃 · 캐리어 프런트 보관<small>오늘 짐을 만지는 건 이번과 픽업 때 두 번뿐</small></span>
+ </div>
+
+ <div class="activity pin" data-location="한큐백화점우메다" data-prev="우메다숙소">
+ <input type="checkbox" id="d4-3" data-day="4">
+ <span class="time">10:00-14:00</span>
+ <span class="location">쇼핑 한큐 백화점 우메다 본점 4시간<small>점심 포함 · 오픈런하면 월요일이라 한산</small></span>
+ </div>
+ <div class="route-info" id="route-d4-3">도보 오사카역 → 한큐 백화점 도보 5분 (지하 연결) · <b>10:00 오픈</b> / 20:00 폐점<br>할인 <b>B1 인포메이션 또는 1층 인포메이션 센터에서 여권 제시 → 5% 게스트 쿠폰</b> · 면세 카운터는 B1과 1층 두 곳<br>간식 후기상 강점은 도시락보다 <b>디저트</b> — FOUNDRY(B1) 제철과일 케이크는 현지인도 웨이팅<br>식사 B1 식품관은 취식 공간이 없으니 점심은 위층 레스토랑가에서</div>
+
+ <div class="activity pin" data-location="우메키타공원" data-prev="한큐백화점우메다">
+        <input type="checkbox" id="d4-4" data-day="4">
+        <span class="time">14:00-14:25</span>
+        <span class="location">우메키타 공원에서 휴식<small>25분 · 무료 · 4시간 쇼핑 뒤 다리 쉬기</small></span>
+      </div>
+      <div class="route-info" id="route-d4-4">도보 한큐 백화점 → 우메키타 공원(그랑그린 오사카) 도보 7분 · 오사카역 바로 북쪽 · 24시간 개방<br>팁 테이블·의자·앉을 수 있는 바위·그늘 나무가 있어 쉬기 좋고, 우메다 초고층 빌딩과 스카이빌딩이 배경으로 잡힙니다<br>대안: <b>오하쓰텐진(츠유노텐 신사)</b> — 한큐에서 도보 8분, 무료. 하트 에마와 인연의 신사로, 고층빌딩 한복판인데 분위기가 완전히 다릅니다<br>제외 HEP FIVE 관람차는 1일차 에비스타워와 겹쳐서 뺐습니다 — 덕분에 하루카를 30분 당깁니다</div>
+
+      <div class="activity" data-location="우메다숙소" data-prev="우메키타공원">
+        <input type="checkbox" id="d4-5" data-day="4">
+        <span class="time">14:30-15:05</span>
+        <span class="location">호텔에서 짐 픽업 → JR 오사카역<small>공원 → 호텔 도보 11분 · 호텔 → 오사카역 도보 10분</small></span>
+      </div>
+
+      <div class="activity pin" data-location="간사이공항" data-prev="우메다숙소">
+ <input type="checkbox" id="d4-6" data-day="4">
+ <span class="time">15:16-16:06</span>
+ <span class="location">전철 JR 하루카 KIX<small>지정석 + 짐칸 · 환승 0회 · 정체 리스크 없음</small></span>
+ </div>
+ <div class="route-info" id="route-d4-6">전철 하루카 JR 오사카역 → 간사이공항 · 약 50분 · ¥2,380 · 매시 :16 / :46 출발 · 온라인 예약이 저렴<br>시각 HEP FIVE를 빼서 <b>15:16편</b>을 탑니다 — KIX 16:06 도착, 탑승 <b>2시간 54분 전</b>. 밀리면 15:46편도 있습니다</div>
+
+ <div class="activity" data-location="간사이공항" data-prev="간사이공항">
+ <input type="checkbox" id="d4-7" data-day="4">
+ <span class="time">16:10-18:30</span>
+ <span class="location">수속 체크인 · 출국 · 면세<small>탑승 2시간 54분 전 도착 — 면세 쇼핑 여유</small></span>
+ </div>
+
+ <div class="activity" data-location="간사이공항" data-prev="간사이공항">
+ <input type="checkbox" id="d4-8" data-day="4">
+ <span class="time">19:00</span>
+ <span class="location">항공 간사이공항 출발 → 인천</span>
+ </div>
+ </div>
+ <div class="map-section">
+ <div class="map-container">
+ <div class="map-header">4일차 동선</div>
+ <iframe class="map-frame" id="map-day4" src="https://www.google.com/maps?q=34.7030,135.4960&z=15&output=embed"></iframe>
+ </div>
+ </div>
+ </div>
+</div>
+
+<!-- ================= 전체 ================= -->
+<div class="day-section" id="overview">
+ <div class="day-header dayO">
+ <span>전체 장소</span>
+ <div class="progress-circle">장소</div>
+ </div>
+ <div class="itinerary-map-container">
+ <div class="itinerary-section">
+ <div class="day-note"> 항목을 탭하면 <b>아래 지도가 그 위치로 확대</b>됩니다. 길찾기가 필요하면 지도 위 말풍선의 " 구글 지도에서 길찾기"를 누르세요.</div>
+
+ <div class="overview-info">
+ <h3> 거점 · 공항</h3>
+ <div class="location-list">
+ <div class="location-item" data-location="우메다숙소"><span class="location-name"> 우메다 (숙소 거점)</span><span class="copy-hint">지도에서 보기</span></div>
+ <div class="location-item" data-location="간사이공항"><span class="location-name">항공 간사이 국제공항</span><span class="copy-hint">지도에서 보기</span></div>
+ <div class="location-item" data-location="인천공항"><span class="location-name">항공 인천 국제공항</span><span class="copy-hint">지도에서 보기</span></div>
+ </div>
+ </div>
+
+ <div class="overview-info">
+ <h3> 오사카</h3>
+ <div class="location-list">
+ <div class="location-item" data-location="에비스바시"><span class="location-name"> 에비스바시 · 글리코 간판</span><span class="copy-hint">DAY 1</span></div>
+ <div class="location-item" data-location="도톤보리"><span class="location-name"> 도톤보리 600m 거리</span><span class="copy-hint">DAY 1</span></div>
+ <div class="location-item" data-location="우라난바"><span class="location-name">우라난바 (타치노미 골목)</span><span class="copy-hint">1일차 대안</span></div>
+          <div class="location-item" data-location="리버크루즈"><span class="location-name">톤보리 리버크루즈 승선장</span><span class="copy-hint">1일차</span></div>
+ <div class="location-item" data-location="호젠지요코초"><span class="location-name"> 호젠지 요코초</span><span class="copy-hint">DAY 1</span></div>
+ <div class="location-item" data-location="한큐백화점우메다"><span class="location-name">쇼핑 한큐 백화점 우메다 본점</span><span class="copy-hint">DAY 2 · 4</span></div>
+ <div class="location-item" data-location="신세카이"><span class="location-name"> 신세카이 · 쓰텐카쿠</span><span class="copy-hint">DAY 2</span></div>
+ <div class="location-item" data-location="고에몬"><span class="location-name">식사 쿠시카츠 고에몬 (1차)</span><span class="copy-hint">18:30</span></div>
+ <div class="location-item" data-location="무겐라멘"><span class="location-name">식사 무겐 라멘 (2차)</span><span class="copy-hint">20:40</span></div>
+ <div class="location-item" data-location="십삼회장"><span class="location-name"> 십삼 회장 (마음 바뀌면)</span><span class="copy-hint">예비</span></div>
+ <div class="location-item" data-location="십삼공원"><span class="location-name"> 십삼공원 (예비)</span><span class="copy-hint">예비</span></div>
+ <div class="location-item" data-location="한큐주소역"><span class="location-name">전철 한큐 주소(주소)역</span><span class="copy-hint">DAY 2</span></div>
+ <div class="location-item" data-location="우메키타공원"><span class="location-name"> 우메키타 공원</span><span class="copy-hint">DAY 4 </span></div>
+ <div class="location-item" data-location="오하쓰텐진"><span class="location-name"> 오하쓰텐진 (대안)</span><span class="copy-hint">대안</span></div>
+ <div class="location-item" data-location="우메다스카이빌딩"><span class="location-name"> 우메다 스카이빌딩 (예비)</span><span class="copy-hint">예비</span></div>
+ <div class="location-item" data-location="오사카성"><span class="location-name"> 오사카성 (이번엔 제외)</span><span class="copy-hint">제외</span></div>
+ </div>
+ </div>
+
+ <div class="overview-info">
+ <h3> 교토 (DAY 3)</h3>
+ <div class="location-list">
+ <div class="location-item" data-location="한큐아라시야마역"><span class="location-name">전철 한큐 아라시야마역</span><span class="copy-hint">09:50</span></div>
+ <div class="location-item" data-location="도게쓰교"><span class="location-name"> 도게쓰교</span><span class="copy-hint">09:50</span></div>
+ <div class="location-item" data-location="아라시야마대나무숲"><span class="location-name"> 대나무숲 (치쿠린노미치)</span><span class="copy-hint">10:15</span></div>
+ <div class="location-item" data-location="니시키시장"><span class="location-name">식사 니시키 시장</span><span class="copy-hint">11:45</span></div>
+ <div class="location-item" data-location="야사카신사"><span class="location-name"> 야사카신사 · 기온</span><span class="copy-hint">12:45</span></div>
+ <div class="location-item" data-location="고다이지"><span class="location-name">카페 고다이지 · 네네노미치</span><span class="copy-hint">13:40</span></div>
+ <div class="location-item" data-location="야사카노토"><span class="location-name"> 야사카노토 (법관사 탑)</span><span class="copy-hint">14:05</span></div>
+ <div class="location-item" data-location="산넨자카"><span class="location-name"> 산넨자카 · 니넨자카</span><span class="copy-hint">14:20</span></div>
+ <div class="location-item" data-location="기요미즈데라"><span class="location-name"> 기요미즈데라 (청수사)</span><span class="copy-hint">14:50</span></div>
+ <div class="location-item" data-location="후시미이나리"><span class="location-name"> 후시미이나리 (여우신사)</span><span class="copy-hint">16:45 </span></div>
+ </div>
+ </div>
+
+ <div class="overview-info">
+ <h3> 나라 (DAY 2)</h3>
+ <div class="location-list">
+ <div class="location-item" data-location="JR나라역"><span class="location-name">전철 JR 나라역</span><span class="copy-hint">10:15</span></div>
+ <div class="location-item" data-location="나라공원"><span class="location-name"> 나라공원 (사슴) </span><span class="copy-hint">10:35</span></div>
+ <div class="location-item" data-location="도다이지"><span class="location-name"> 동대사 (도다이지)</span><span class="copy-hint">11:30</span></div>
+ <div class="location-item" data-location="가스가타이샤"><span class="location-name"> 가스가타이샤 숲길</span><span class="copy-hint">12:30</span></div>
+ <div class="location-item" data-location="이스이엔"><span class="location-name">카페 이스이엔 정원</span><span class="copy-hint">13:40</span></div>
+ <div class="location-item" data-location="나라마치"><span class="location-name">식사 나라마치</span><span class="copy-hint">14:30</span></div>
+ <div class="location-item" data-location="고후쿠지"><span class="location-name"> 고후쿠지 5층탑</span><span class="copy-hint">15:40</span></div>
+ <div class="location-item" data-location="히가시무키상점가"><span class="location-name">쇼핑 히가시무키 상점가</span><span class="copy-hint">16:00</span></div>
+ </div>
+ </div>
+ </div>
+ <div class="map-section">
+ <div class="map-container">
+ <div class="map-header">전체 지도</div>
+ <div id="overview-map"></div>
+ </div>
+ </div>
+ </div>
+</div>
+
+<!-- ================= 회화 ================= -->
+<div class="day-section" id="phrases">
+  <div class="day-header dayP">
+    <span>필수 회화</span>
+    <div class="progress-circle">읽는 법</div>
+  </div>
+  <div class="itinerary-section">
+    <div class="day-note">발음은 <b>한국어로 읽으면 통하는 수준</b>으로 적었습니다. 정확한 일본어 발음이 아니라 <b>말했을 때 알아듣는</b> 걸 기준으로 했습니다.<br>밑줄 친 부분은 살짝 힘을 빼고, 「스」는 「스」보다 「ㅅ」에 가깝게 소리내면 자연스럽습니다.</div>
+
+    <div class="phrase-group">
+      <h3>기본 · 인사</h3>
+      <div class="phrase"><div class="ko">감사합니다</div><div class="jp">ありがとうございます</div><span class="rd">아리가또- 고자이마스</span></div>
+      <div class="phrase"><div class="ko">죄송합니다 / 실례합니다</div><div class="jp">すみません</div><span class="rd">스미마셍</span><span class="memo">부를 때도, 사과할 때도, 지나갈 때도 이거 하나면 됩니다. 가장 많이 쓸 말</span></div>
+      <div class="phrase"><div class="ko">네 / 아니요</div><div class="jp">はい / いいえ</div><span class="rd">하이 / 이-에</span></div>
+      <div class="phrase"><div class="ko">괜찮습니다 (거절)</div><div class="jp">大丈夫です</div><span class="rd">다이죠-부데스</span><span class="memo">봉투 필요하냐, 데워주냐 물을 때 거절용</span></div>
+      <div class="phrase"><div class="ko">부탁합니다</div><div class="jp">お願いします</div><span class="rd">오네가이시마스</span><span class="memo">주문·요청 끝에 붙이면 정중해집니다</span></div>
+      <div class="phrase"><div class="ko">한국인입니다</div><div class="jp">韓国人です</div><span class="rd">캉코쿠진데스</span></div>
+      <div class="phrase"><div class="ko">일본어 못합니다</div><div class="jp">日本語わかりません</div><span class="rd">니홍고 와카리마셍</span></div>
+      <div class="phrase"><div class="ko">영어 되나요?</div><div class="jp">英語できますか</div><span class="rd">에-고 데키마스카</span></div>
+    </div>
+
+    <div class="phrase-group">
+      <h3>식당</h3>
+      <div class="phrase"><div class="ko">두 명이요</div><div class="jp">二人です</div><span class="rd">후타리데스</span><span class="memo">입구에서 손가락 두 개와 함께</span></div>
+      <div class="phrase"><div class="ko">메뉴 주세요</div><div class="jp">メニューください</div><span class="rd">메뉴- 쿠다사이</span></div>
+      <div class="phrase"><div class="ko">이거 주세요</div><div class="jp">これください</div><span class="rd">코레 쿠다사이</span><span class="memo">메뉴 가리키며 — 가장 강력한 주문법</span></div>
+      <div class="phrase"><div class="ko">이거랑 이거요</div><div class="jp">これとこれ</div><span class="rd">코레토 코레</span></div>
+      <div class="phrase"><div class="ko">추천이 뭐예요?</div><div class="jp">おすすめは何ですか</div><span class="rd">오스스메와 난데스카</span></div>
+      <div class="phrase"><div class="ko">생맥주 하나</div><div class="jp">生ビール一つ</div><span class="rd">나마비-루 히토츠</span><span class="memo">하나=히토츠, 둘=후타츠, 셋=밋츠</span></div>
+      <div class="phrase"><div class="ko">계산해주세요</div><div class="jp">お会計お願いします</div><span class="rd">오카이케- 오네가이시마스</span><span class="memo">자리에서 손으로 X자를 그려도 통합니다</span></div>
+      <div class="phrase"><div class="ko">카드 되나요?</div><div class="jp">カード使えますか</div><span class="rd">카-도 츠카에마스카</span><span class="memo">소규모 가게는 현금만인 곳이 있습니다</span></div>
+      <div class="phrase"><div class="ko">맛있어요</div><div class="jp">おいしいです</div><span class="rd">오이시-데스</span></div>
+      <div class="phrase"><div class="ko">잘 먹겠습니다 / 잘 먹었습니다</div><div class="jp">いただきます / ごちそうさまでした</div><span class="rd">이타다키마스 / 고치소-사마데시타</span></div>
+      <div class="phrase"><div class="ko">포장해주세요</div><div class="jp">持ち帰りで</div><span class="rd">모치카에리데</span><span class="memo">데파치카·도시락</span></div>
+    </div>
+
+    <div class="phrase-group">
+      <h3>쿠시카츠 · 신세카이 (2일차)</h3>
+      <div class="phrase"><div class="ko">소스 두 번 찍기 금지</div><div class="jp">ソース二度づけ禁止</div><span class="rd">소-스 니도즈케 킨시</span><span class="memo">벽에 이렇게 붙어 있습니다. 양배추로 소스를 떠서 뿌리세요</span></div>
+      <div class="phrase"><div class="ko">양배추 더 주세요</div><div class="jp">キャベツもう一つ</div><span class="rd">캬베츠 모- 히토츠</span><span class="memo">대부분 무료 리필</span></div>
+      <div class="phrase"><div class="ko">모둠으로 주세요</div><div class="jp">盛り合わせで</div><span class="rd">모리아와세데</span><span class="memo">뭘 시킬지 모를 때 만능</span></div>
+    </div>
+
+    <div class="phrase-group">
+      <h3>교통</h3>
+      <div class="phrase"><div class="ko">이 역으로 가고 싶어요</div><div class="jp">この駅に行きたいです</div><span class="rd">코노 에키니 이키타이데스</span><span class="memo">지도 화면 보여주면서</span></div>
+      <div class="phrase"><div class="ko">어디서 갈아타요?</div><div class="jp">どこで乗り換えますか</div><span class="rd">도코데 노리카에마스카</span></div>
+      <div class="phrase"><div class="ko">몇 번 승강장이에요?</div><div class="jp">何番ホームですか</div><span class="rd">난반 호-무데스카</span></div>
+      <div class="phrase"><div class="ko">막차 몇 시예요?</div><div class="jp">終電は何時ですか</div><span class="rd">슈-덴와 난지데스카</span></div>
+      <div class="phrase"><div class="ko">하루카 티켓 수령하러 왔어요</div><div class="jp">はるかのチケットを受け取りたいです</div><span class="rd">하루카노 치켓토오 우케토리타이데스</span><span class="memo">창구에서 — 예약 QR과 여권을 함께 내밀면 됩니다</span></div>
+      <div class="phrase"><div class="ko">지정석으로 부탁합니다</div><div class="jp">指定席でお願いします</div><span class="rd">시테-세키데 오네가이시마스</span><span class="memo">캐리어 2개니 지정석이 편합니다</span></div>
+      <div class="phrase"><div class="ko">ICOCA 충전해주세요</div><div class="jp">ICOCAにチャージお願いします</div><span class="rd">이코카니 챠-지 오네가이시마스</span></div>
+    </div>
+
+    <div class="phrase-group">
+      <h3>쇼핑 · 백화점 (4일차)</h3>
+      <div class="phrase"><div class="ko">면세 되나요?</div><div class="jp">免税できますか</div><span class="rd">멘제- 데키마스카</span><span class="memo">한큐 백화점 B1·1층 면세 카운터</span></div>
+      <div class="phrase"><div class="ko">여권 여기 있습니다</div><div class="jp">パスポートです</div><span class="rd">파스포-토데스</span></div>
+      <div class="phrase"><div class="ko">게스트 쿠폰 받고 싶어요</div><div class="jp">ゲストクーポンをもらいたいです</div><span class="rd">게스토 쿠-퐁오 모라이타이데스</span><span class="memo">인포메이션에서 5% 할인 쿠폰</span></div>
+      <div class="phrase"><div class="ko">봉투 주세요</div><div class="jp">袋ください</div><span class="rd">후쿠로 쿠다사이</span><span class="memo">유료인 곳이 많습니다 (¥3~5)</span></div>
+      <div class="phrase"><div class="ko">그냥 보는 거예요</div><div class="jp">見てるだけです</div><span class="rd">미테루다케데스</span><span class="memo">점원이 다가올 때</span></div>
+      <div class="phrase"><div class="ko">얼마예요?</div><div class="jp">いくらですか</div><span class="rd">이쿠라데스카</span></div>
+    </div>
+
+    <div class="phrase-group">
+      <h3>호텔</h3>
+      <div class="phrase"><div class="ko">체크인 부탁합니다</div><div class="jp">チェックインお願いします</div><span class="rd">쳇쿠인 오네가이시마스</span></div>
+      <div class="phrase"><div class="ko">짐 맡길 수 있나요?</div><div class="jp">荷物を預けられますか</div><span class="rd">니모츠오 아즈케라레마스카</span><span class="memo">4일차 아침 체크아웃 후 필수</span></div>
+      <div class="phrase"><div class="ko">짐 찾으러 왔어요</div><div class="jp">荷物を受け取りたいです</div><span class="rd">니모츠오 우케토리타이데스</span><span class="memo">4일차 오후</span></div>
+      <div class="phrase"><div class="ko">와이파이 비밀번호 알려주세요</div><div class="jp">Wi-Fiのパスワードを教えてください</div><span class="rd">와이화이노 파스와-도오 오시에테 쿠다사이</span></div>
+    </div>
+
+    <div class="phrase-group">
+      <h3>관광지</h3>
+      <div class="phrase"><div class="ko">입장료 얼마예요?</div><div class="jp">入場料はいくらですか</div><span class="rd">뉴-죠-료-와 이쿠라데스카</span></div>
+      <div class="phrase"><div class="ko">사진 찍어주실 수 있나요?</div><div class="jp">写真を撮ってもらえますか</div><span class="rd">샤신오 톳테 모라에마스카</span></div>
+      <div class="phrase"><div class="ko">화장실 어디예요?</div><div class="jp">トイレはどこですか</div><span class="rd">토이레와 도코데스카</span></div>
+      <div class="phrase"><div class="ko">몇 시까지 해요?</div><div class="jp">何時までですか</div><span class="rd">난지마데데스카</span></div>
+      <div class="phrase"><div class="ko">사슴 먹이 주세요</div><div class="jp">鹿せんべいください</div><span class="rd">시카센베- 쿠다사이</span><span class="memo">2일차 나라 · ¥200</span></div>
+    </div>
+
+    <div class="phrase-group">
+      <h3>긴급</h3>
+      <div class="phrase"><div class="ko">도와주세요</div><div class="jp">助けてください</div><span class="rd">타스케테 쿠다사이</span></div>
+      <div class="phrase"><div class="ko">길을 잃었어요</div><div class="jp">道に迷いました</div><span class="rd">미치니 마요이마시타</span></div>
+      <div class="phrase"><div class="ko">한국어 되는 분 계세요?</div><div class="jp">韓国語できる人いますか</div><span class="rd">캉코쿠고 데키루 히토 이마스카</span></div>
+      <div class="phrase"><div class="ko">약국 어디예요?</div><div class="jp">薬局はどこですか</div><span class="rd">얏쿄쿠와 도코데스카</span></div>
+      <div class="phrase"><div class="ko">여기가 아파요</div><div class="jp">ここが痛いです</div><span class="rd">코코가 이타이데스</span><span class="memo">아픈 곳을 가리키며</span></div>
+    </div>
+
+    <div class="phrase-group">
+      <h3>읽어두면 좋은 표지판</h3>
+      <div class="phrase"><div class="ko">입구 / 출구</div><div class="jp">入口 / 出口</div><span class="rd">이리구치 / 데구치</span></div>
+      <div class="phrase"><div class="ko">동쪽 출구 / 서쪽 출구</div><div class="jp">東口 / 西口</div><span class="rd">히가시구치 / 니시구치</span><span class="memo">역 출구는 방향으로 표시됩니다. 우메키타구치=うめきた口</span></div>
+      <div class="phrase"><div class="ko">준비중 / 영업중</div><div class="jp">準備中 / 営業中</div><span class="rd">준비추- / 에-교-추-</span></div>
+      <div class="phrase"><div class="ko">정기휴일</div><div class="jp">定休日</div><span class="rd">테-큐-비</span></div>
+      <div class="phrase"><div class="ko">품절</div><div class="jp">売り切れ</div><span class="rd">우리키레</span></div>
+      <div class="phrase"><div class="ko">현금만 가능</div><div class="jp">現金のみ</div><span class="rd">겡킨노미</span></div>
+      <div class="phrase"><div class="ko">촬영금지</div><div class="jp">撮影禁止</div><span class="rd">사츠에- 킨시</span><span class="memo">기온 사유지 골목은 벌금이 있습니다</span></div>
+      <div class="phrase"><div class="ko">막차</div><div class="jp">終電</div><span class="rd">슈-덴</span></div>
+    </div>
+  </div>
+</div>
+
+<div class="tab-navigation">
+  <button class="tab-btn active" onclick="showDay('checklist')">준비물</button>
+  <button class="tab-btn" onclick="showDay(1)">일정</button>
+  <button class="tab-btn" onclick="showDay('overview')">지도</button>
+  <button class="tab-btn" onclick="showDay('phrases')">회화</button>
+</div>
+
+<!--
+ 구글 지도 API 키
+ 기존 방콕 파일에 있던 키를 그대로 옮겨 두었습니다.
+ 교체하려면: https://console.cloud.google.com/apis/credentials 에서 키 발급 
+ Maps JavaScript API + Directions API 활성화 아래 key= 값 교체
+ 키가 없거나 만료돼도 iframe 기본 지도로 자동 대체되어 일정 기능은 그대로 동작합니다.
+-->
+<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA3Q7_C3Js9Ms-CqdJdFDzSPU6guWQA65g&libraries=geometry&callback=initMaps"></script>
+
+<script>
+let maps = {}, directionsServices = {}, directionsRenderers = {};
+let overviewMap, overviewMarkers = [], mapsReady = false;
+let dayMarkers = {}, overviewByName = {};
+
+const locationData = {
+  '인천공항':            { lat:37.4602, lng:126.4407, ko:'인천국제공항', address:'인천광역시 중구 공항로 272' },
+  '간사이공항':          { lat:34.4320, lng:135.2304, ko:'간사이 국제공항', address:'関西国際空港 / 大阪府泉佐野市泉州空港北1' },
+  '우메다숙소':          { lat:34.7076, lng:135.5008, ko:'퀸테사 호텔 오사카 우메다 코믹앤북스', address:'クインテッサホテル大阪梅田 コミック&ブックス / 大阪市北区鶴野町2-15' },
+  '도톤보리':            { lat:34.6687, lng:135.5012, ko:'도톤보리', address:'道頓堀 / 大阪市中央区道頓堀1丁目' },
+  '신사이바시':          { lat:34.6745, lng:135.5010, ko:'신사이바시 상점가', address:'心斎橋筋 / 大阪市中央区心斎橋筋' },
+  '나카쓰역':            { lat:34.7100, lng:135.4966, ko:'나카쓰역 (미도스지선) — 호텔 도보 6분', address:'大阪メトロ御堂筋線 中津駅 / 大阪市北区中津3丁目' },
+  '에비스바시':          { lat:34.6686, lng:135.5010, ko:'에비스바시 (글리코 간판)', address:'戎橋 グリコ看板 / 大阪市中央区道頓堀1丁目' },
+  '리버크루즈':          { lat:34.6698, lng:135.5033, ko:'톤보리 리버크루즈 승선장', address:'とんぼりリバークルーズ 太左衛門橋船着場' },
+  '우라난바':            { lat:34.6640, lng:135.5045, ko:'우라난바 (타치노미 골목)', address:'裏なんば / 大阪市中央区難波千日前' },
+  '호젠지요코초':        { lat:34.6684, lng:135.5031, ko:'호젠지 요코초', address:'法善寺横丁 / 大阪市中央区難波1丁目' },
+  '한큐백화점우메다':    { lat:34.7025, lng:135.4989, ko:'한큐 백화점 우메다 본점', address:'阪急うめだ本店 / 大阪市北区角田町8-7' },
+  '우메키타공원':        { lat:34.7037, lng:135.4925, ko:'우메키타 공원 (그랑그린 오사카)', address:'うめきた公園 グラングリーン大阪 / 大阪市北区大深町5' },
+  '오하쓰텐진':          { lat:34.6993, lng:135.5008, ko:'오하쓰텐진 (츠유노텐 신사)', address:'露天神社 お初天神 / 大阪市北区曽根崎2-5-4' },
+  '우메다스카이빌딩':    { lat:34.7052, lng:135.4903, ko:'우메다 스카이빌딩 공중정원', address:'梅田スカイビル 空中庭園 / 大阪市北区大淀中1-1-88' },
+  '신세카이':            { lat:34.6524, lng:135.5063, ko:'신세카이 · 쓰텐카쿠', address:'新世界 通天閣 / 大阪市浪速区恵美須東1丁目' },
+  '고에몬':              { lat:34.6520, lng:135.5066, ko:'쿠시카츠 고에몬 (1차)', address:'串カツ新世界 大衆屋台 五右衛門 / 浪速区恵美須東2-2-8' },
+  '무겐라멘':            { lat:34.6500, lng:135.5037, ko:'무겐 라멘 신이마미야역앞점 (2차)', address:'無限ラーメン 新今宮駅前店 / 浪速区恵美須西3-2-19' },
+  '오사카성':            { lat:34.6873, lng:135.5259, ko:'오사카성 천수각 (이번 일정 제외)', address:'大阪城天守閣 / 大阪市中央区大阪城1-1' },
+  '십삼회장':            { lat:34.7160, lng:135.4820, ko:'요도가와 불꽃축제 주소 회장 (예비)', address:'淀川河川敷 十三会場 / 大阪市淀川区新北野' },
+  '십삼공원':            { lat:34.7178, lng:135.4790, ko:'주소 공원 (예비)', address:'十三公園 / 大阪市淀川区新北野2丁目' },
+  '한큐주소역':          { lat:34.7208, lng:135.4838, ko:'한큐 주소역', address:'阪急十三駅 / 大阪市淀川区十三東2丁目' },
+  'JR나라역':            { lat:34.6819, lng:135.8189, ko:'JR 나라역', address:'JR奈良駅 / 奈良市三条本町' },
+  '나라공원':            { lat:34.6851, lng:135.8430, ko:'나라공원 (사슴)', address:'奈良公園 / 奈良市雑司町' },
+  '도다이지':            { lat:34.6890, lng:135.8398, ko:'동대사 대불전', address:'東大寺 大仏殿 / 奈良市雑司町406-1' },
+  '가스가타이샤':        { lat:34.6815, lng:135.8484, ko:'가스가타이샤 숲길', address:'春日大社 / 奈良市春日野町160' },
+  '이스이엔':            { lat:34.6857, lng:135.8324, ko:'이스이엔 정원', address:'依水園 / 奈良市水門町74' },
+  '나라마치':            { lat:34.6779, lng:135.8296, ko:'나라마치', address:'ならまち / 奈良市中院町' },
+  '고후쿠지':            { lat:34.6830, lng:135.8305, ko:'고후쿠지 5층탑', address:'興福寺 五重塔 / 奈良市登大路町48' },
+  '히가시무키상점가':    { lat:34.6836, lng:135.8283, ko:'히가시무키 상점가', address:'東向商店街 / 奈良市東向中町' },
+  '한큐아라시야마역':    { lat:35.0092, lng:135.6788, ko:'한큐 아라시야마역', address:'阪急嵐山駅 / 京都市西京区嵐山東一川町' },
+  '도게쓰교':            { lat:35.0128, lng:135.6779, ko:'도게쓰교', address:'渡月橋 / 京都市右京区嵯峨中ノ島町' },
+  '아라시야마대나무숲':  { lat:35.0170, lng:135.6716, ko:'아라시야마 대나무숲 (치쿠린노미치)', address:'竹林の小径 / 京都市右京区嵯峨天龍寺芒ノ馬場町' },
+  '가와라마치역':        { lat:35.0037, lng:135.7690, ko:'한큐 교토카와라마치역', address:'阪急京都河原町駅 / 京都市下京区四条通河原町' },
+  '니시키시장':          { lat:35.0050, lng:135.7648, ko:'니시키 시장', address:'錦市場 / 京都市中京区西大文字町' },
+  '야사카신사':          { lat:35.0036, lng:135.7785, ko:'야사카신사 (기온)', address:'八坂神社 / 京都市東山区祇園町北側625' },
+  '고다이지':            { lat:34.9997, lng:135.7806, ko:'고다이지 · 네네노미치', address:'高台寺 / 京都市東山区下河原町526' },
+  '야사카노토':          { lat:34.9979, lng:135.7793, ko:'야사카노토 (법관사 오층탑)', address:'法観寺 八坂の塔 / 京都市東山区八坂上町388' },
+  '산넨자카':            { lat:34.9958, lng:135.7813, ko:'산넨자카 · 니넨자카', address:'産寧坂 / 京都市東山区清水' },
+  '기요미즈데라':        { lat:34.9949, lng:135.7850, ko:'기요미즈데라 (청수사)', address:'清水寺 / 京都市東山区清水1-294' },
+  '후시미이나리':        { lat:34.9671, lng:135.7727, ko:'후시미이나리 대사 (여우신사)', address:'伏見稲荷大社 / 京都市伏見区深草藪之内町68' }
+};
+
+const markerColors = {
+ '우메다숙소':'red', '나카쓰역':'red', '간사이공항':'purple', '인천공항':'purple',
+ '도톤보리':'orange', '신사이바시':'orange', '한큐백화점우메다':'orange',
+ '우메키타공원':'green', '오하쓰텐진':'blue', '우메다스카이빌딩':'blue', '오사카성':'blue',
+ '십삼회장':'pink', '한큐주소역':'pink', '십삼공원':'pink', '호젠지요코초':'orange',
+ 'JR나라역':'yellow', '도다이지':'yellow', '나라공원':'yellow', '나라마치':'yellow',
+ '가스가타이샤':'yellow', '히가시무키상점가':'yellow', '고후쿠지':'yellow', '이스이엔':'yellow', '신세카이':'orange', '고에몬':'orange', '무겐라멘':'orange', '에비스바시':'orange', '리버크루즈':'orange', '우라난바':'orange'
+};
+const kyotoSet = ['한큐아라시야마역','도게쓰교','아라시야마대나무숲','가와라마치역','니시키시장','야사카신사','고다이지','야사카노토','산넨자카','기요미즈데라','후시미이나리'];
+
+/* ---------- 저장 (다운로드해서 열면 localStorage로 유지, 미리보기에서는 메모리로 동작) ---------- */
+const memStore = {};
+function saveState(key, val) {
+ memStore[key] = val;
+ try { localStorage.setItem('kansai_' + key, val); } catch (e) {}
+}
+function loadState(key) {
+ try {
+ const v = localStorage.getItem('kansai_' + key);
+ if (v !== null) return v;
+ } catch (e) {}
+ return memStore[key] !== undefined ? memStore[key] : null;
+}
+
+/* ---------- 지도 ---------- */
+function initMaps() {
+ mapsReady = true;
+ for (let i = 1; i <= 4; i++) initDayMap(i);
+ initOverviewMap();
+}
+window.initMaps = initMaps;
+
+function initDayMap(day) {
+ const frame = document.getElementById('map-day' + day);
+ if (!frame) return;
+ const div = document.createElement('div');
+ div.id = 'map-day' + day;
+ div.style.width = '100%';
+ div.style.flex = '1';
+ div.style.minHeight = '290px';
+ frame.parentNode.replaceChild(div, frame);
+
+ const centers = { 1:{lat:34.690,lng:135.499,z:12}, 2:{lat:34.700,lng:135.660,z:10},
+ 3:{lat:35.000,lng:135.720,z:11}, 4:{lat:34.610,lng:135.400,z:10} };
+ maps[day] = new google.maps.Map(div, {
+ zoom: centers[day].z,
+ center: { lat: centers[day].lat, lng: centers[day].lng },
+ mapTypeId: google.maps.MapTypeId.ROADMAP,
+ mapTypeControl: false, streetViewControl: false, fullscreenControl: true
+ });
+ directionsServices[day] = new google.maps.DirectionsService();
+ directionsRenderers[day] = new google.maps.DirectionsRenderer({ suppressMarkers:false, preserveViewport:false });
+ directionsRenderers[day].setMap(maps[day]);
+ drawDayMarkers(day);
+}
+
+function koName(n){ return (locationData[n] && locationData[n].ko) || n; }
+
+function infoHtml(name) {
+ const d = locationData[name];
+ return '<div style="font-size:13px;padding:3px 5px;max-width:220px">' +
+ '<b>' + name + '</b><br>' +
+ '<span style="color:#666;font-size:11px">' + (d.address || '') + '</span><br>' +
+ '<a href="https://www.google.com/maps/dir/?api=1&destination=' + d.lat + ',' + d.lng +
+ '" target="_blank" rel="noopener" style="font-size:11px;color:#1a73e8;text-decoration:none"> 구글 지도에서 길찾기</a></div>';
+}
+
+function drawDayMarkers(day) {
+ const acts = document.querySelectorAll('#day' + day + ' .activity');
+ const seen = new Set();
+ const bounds = new google.maps.LatLngBounds();
+ let n = 0;
+ dayMarkers[day] = {};
+ acts.forEach(a => {
+ const name = a.dataset.location;
+ if (!name || seen.has(name) || !locationData[name]) return;
+ seen.add(name); n++;
+ const d = locationData[name];
+ const m = new google.maps.Marker({
+ position: { lat:d.lat, lng:d.lng }, map: maps[day], title: (d.ko || name),
+ label: { text: String(n), color:'#fff', fontSize:'11px', fontWeight:'bold' }
+ });
+ const iw = new google.maps.InfoWindow({ content: infoHtml(name) });
+ m.addListener('click', () => { closeAllInfo(); iw.open(maps[day], m); });
+ dayMarkers[day][name] = { marker: m, info: iw };
+ bounds.extend(m.getPosition());
+ });
+ if (n > 1) maps[day].fitBounds(bounds);
+}
+
+function closeAllInfo() {
+ Object.keys(dayMarkers).forEach(d => {
+ Object.keys(dayMarkers[d]).forEach(k => dayMarkers[d][k].info.close());
+ });
+ Object.keys(overviewByName).forEach(k => overviewByName[k].info.close());
+}
+
+function initOverviewMap() {
+ const div = document.getElementById('overview-map');
+ if (!div) return;
+ overviewMap = new google.maps.Map(div, {
+ zoom: 10, center: { lat:34.82, lng:135.62 },
+ mapTypeId: google.maps.MapTypeId.ROADMAP,
+ mapTypeControl: false, streetViewControl: false
+ });
+ const bounds = new google.maps.LatLngBounds();
+ Object.keys(locationData).forEach(name => {
+ if (name === '인천공항') return;
+ const d = locationData[name];
+ const color = markerColors[name] || (kyotoSet.includes(name) ? 'green' : 'red');
+ const marker = new google.maps.Marker({
+ position: { lat:d.lat, lng:d.lng }, map: overviewMap, title: (d.ko || name),
+ icon: { url:'https://maps.google.com/mapfiles/ms/icons/' + color + '-dot.png',
+ scaledSize: new google.maps.Size(30, 30) }
+ });
+ const iw = new google.maps.InfoWindow({ content: infoHtml(name) });
+ marker.addListener('click', () => { closeAllInfo(); iw.open(overviewMap, marker); });
+ overviewByName[name] = { marker, info: iw };
+ overviewMarkers.push({ marker, name });
+ bounds.extend(marker.getPosition());
+ });
+ overviewMap.fitBounds(bounds);
+}
+
+function showRoute(day, fromName, toName) {
+ if (!mapsReady || !maps[day]) return;
+ const from = locationData[fromName], to = locationData[toName];
+ if (!from || !to) return;
+
+ directionsServices[day].route({
+ origin: { lat:from.lat, lng:from.lng },
+ destination: { lat:to.lat, lng:to.lng },
+ travelMode: google.maps.TravelMode.TRANSIT,
+ transitOptions: { modes:['BUS','RAIL'], routingPreference:'FEWER_TRANSFERS' }
+ }, (result, status) => {
+ const box = document.getElementById('current-route-day' + day);
+ if (status === 'OK') {
+ directionsRenderers[day].setDirections(result);
+ const leg = result.routes[0].legs[0];
+ if (box) box.innerHTML = koName(fromName) + ' → ' + koName(toName) + ' · ' + leg.duration.text + ' (' + leg.distance.text + ')';
+ } else {
+ showDirectLine(day, from, to, fromName, toName);
+ }
+ });
+}
+
+function showDirectLine(day, from, to, fromName, toName) {
+ if (!maps[day]) return;
+ directionsRenderers[day].setDirections({ routes: [] });
+ const line = new google.maps.Polyline({
+ path: [{ lat:from.lat, lng:from.lng }, { lat:to.lat, lng:to.lng }],
+ geodesic: true, strokeColor:'#03C75A', strokeOpacity:.9, strokeWeight:3,
+ icons: [{ icon:{ path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW }, offset:'100%' }]
+ });
+ line.setMap(maps[day]);
+ const b = new google.maps.LatLngBounds();
+ b.extend({ lat:from.lat, lng:from.lng }); b.extend({ lat:to.lat, lng:to.lng });
+ maps[day].fitBounds(b);
+ const box = document.getElementById('current-route-day' + day);
+ if (box) box.innerHTML = koName(fromName) + ' → ' + koName(toName);
+}
+
+/* ---------- 탭 ---------- */
+function showDay(target) {
+  document.querySelectorAll('.day-section').forEach(x => x.classList.remove('active'));
+  const isDay = !isNaN(parseInt(target, 10));
+  const id = isDay ? ('day' + target) : target;
+  const sec = document.getElementById(id);
+  if (sec) sec.classList.add('active');
+
+  // 서브탭 바는 일정(1~4일차)일 때만
+  const sub = document.getElementById('day-subtabs');
+  if (sub) {
+    sub.style.display = isDay ? 'flex' : 'none';
+    sub.querySelectorAll('.subtab').forEach((b, i) => b.classList.toggle('active', i + 1 === parseInt(target, 10)));
+  }
+
+  // 하단 탭: 준비물 / 일정 / 지도 / 회화
+  const btns = document.querySelectorAll('.tab-btn');
+  btns.forEach(b => b.classList.remove('active'));
+  const idx = (target === 'checklist') ? 0 : isDay ? 1 : (target === 'overview') ? 2 : 3;
+  if (btns[idx]) btns[idx].classList.add('active');
+
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+
+  setTimeout(() => {
+    if (!mapsReady) return;
+    if (id === 'overview' && overviewMap) google.maps.event.trigger(overviewMap, 'resize');
+    else if (isDay && maps[target]) google.maps.event.trigger(maps[target], 'resize');
+  }, 220);
+}
+window.showDay = showDay;
+
+/* ---------- 진행률 ---------- */
+function updateDayProgress(day) {
+ const all = document.querySelectorAll('#day' + day + ' input[type="checkbox"]');
+ const done = document.querySelectorAll('#day' + day + ' input[type="checkbox"]:checked');
+ if (!all.length) return;
+ const p = Math.round(done.length / all.length * 100);
+ const c = document.getElementById('progress-day' + day);
+ if (!c) return;
+ c.textContent = p + '%';
+ 
+}
+
+function updateChecklistProgress() {
+ const all = document.querySelectorAll('input[data-category="checklist"]');
+ const done = document.querySelectorAll('input[data-category="checklist"]:checked');
+ if (!all.length) return;
+ const p = Math.round(done.length / all.length * 100);
+ const c = document.getElementById('progress-checklist');
+ if (c) {
+ c.textContent = p + '%';
+ 
+ }
+ const bar = document.getElementById('total-progress-bar');
+ if (bar) { bar.style.width = p + '%'; bar.setAttribute('aria-valuenow', p); }
+}
+
+/* ---------- 초기화 ---------- */
+document.addEventListener('DOMContentLoaded', () => {
+ // 저장된 체크 상태 복원
+ document.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+ const saved = loadState(cb.id);
+ if (saved === 'true') {
+ cb.checked = true;
+ if (cb.dataset.category === 'checklist') cb.closest('.checklist-item').classList.add('completed');
+ else {
+ const act = cb.closest('.activity');
+ if (act) act.classList.add('completed');
+ const ri = document.getElementById('route-' + cb.id);
+ if (ri) ri.classList.add('show');
+ }
+ }
+ });
+
+ for (let i = 1; i <= 4; i++) updateDayProgress(i);
+ updateChecklistProgress();
+
+ document.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+ cb.addEventListener('change', function () {
+ saveState(this.id, this.checked);
+
+ if (this.dataset.category === 'checklist') {
+ this.closest('.checklist-item').classList.toggle('completed', this.checked);
+ updateChecklistProgress();
+ return;
+ }
+
+ const act = this.closest('.activity');
+ const ri = document.getElementById('route-' + this.id);
+ const day = parseInt(this.dataset.day, 10);
+ act.classList.toggle('completed', this.checked);
+ if (ri) ri.classList.toggle('show', this.checked);
+
+ if (this.checked) {
+ const prev = act.dataset.prev, cur = act.dataset.location;
+ if (prev && cur && prev !== cur) showRoute(day, prev, cur);
+ } else {
+ const box = document.getElementById('current-route-day' + day);
+ if (box) box.innerHTML = '일정을 체크하면 이동 경로가 표시됩니다';
+ if (directionsRenderers[day]) directionsRenderers[day].setDirections({ routes: [] });
+ }
+ updateDayProgress(day);
+ });
+ });
+
+ // 일정 항목 탭 아래 지도에서 확대 (체크박스 탭은 제외)
+ document.querySelectorAll('.activity.pin').forEach(a => {
+ a.addEventListener('click', e => {
+ if (e.target.tagName === 'INPUT') return;
+ const sec = a.closest('.day-section');
+ const day = sec ? parseInt(sec.id.replace('day', ''), 10) : null;
+ if (!day) return;
+ markFocused(a, '#' + sec.id + ' .activity');
+ focusLocation(a.dataset.location, day);
+ });
+ });
+
+ // 전체 탭 장소 목록 전체 지도에서 확대
+ document.querySelectorAll('.location-item').forEach(item => {
+ item.addEventListener('click', () => {
+ markFocused(item, '.location-item');
+ focusLocation(item.dataset.location, 'overview');
+ });
+ });
+});
+
+/* 하단 지도를 해당 위치로 확대 — 새 창으로 열지 않습니다 */
+function focusLocation(name, scope) {
+ const d = locationData[name];
+ if (!d) return;
+
+ const pos = { lat: d.lat, lng: d.lng };
+ const isOverview = (scope === 'overview');
+ const target = isOverview ? overviewMap : maps[scope];
+
+ if (mapsReady && target) {
+ closeAllInfo();
+ target.panTo(pos);
+ target.setZoom(16);
+ const entry = isOverview ? overviewByName[name] : (dayMarkers[scope] || {})[name];
+ if (entry) {
+ entry.info.open(target, entry.marker);
+ if (entry.marker.setAnimation) {
+ entry.marker.setAnimation(google.maps.Animation.BOUNCE);
+ setTimeout(() => entry.marker.setAnimation(null), 1400);
+ }
+ }
+ google.maps.event.trigger(target, 'resize');
+ } else {
+ // API 미로드 시 iframe 지도를 해당 좌표로 교체
+ const frameId = isOverview ? 'overview-map' : ('map-day' + scope);
+ const frame = document.getElementById(frameId);
+ if (frame && frame.tagName === 'IFRAME') {
+ frame.src = 'https://www.google.com/maps?q=' + d.lat + ',' + d.lng + '&z=16&output=embed';
+ }
+ }
+
+ // 지도가 화면에 보이도록 스크롤
+ const sec = isOverview ? document.getElementById('overview') : document.getElementById('day' + scope);
+ const mapBox = sec && sec.querySelector('.map-section');
+ if (mapBox) mapBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+function markFocused(el, groupSelector) {
+ document.querySelectorAll(groupSelector).forEach(x => x.classList.remove('focused'));
+ el.classList.add('focused');
+}
+</script>
+</body>
+</html>
