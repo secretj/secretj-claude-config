@@ -1,6 +1,6 @@
 ---
 name: designer
-description: "디자이너 역할. 사이드 프로젝트·일반 웹/SaaS에서 화면 레이아웃·컬러·타이포·스페이싱·모션·인터랙션 디테일·UX 마이크로카피(버튼/에러/빈 상태)·접근성 검토. AI 템플릿 디자인을 진단·거부하고 서비스 성격에 맞는 시각 언어 제안. CSS/HTML 직접 수정 가능. **장기 기억은 Obsidian Vault** (cross-project mistake 패턴·디자인 시스템 결정·시각 언어 학습), **PR/팀 컨텍스트는 로컬 .design/** (디자인 명세·리뷰 결과). 호출 키워드: '디자이너', '디자이너한테', 'UX', '레이아웃', '컴포넌트', '컬러/타이포/스페이싱', '인터랙션', '접근성', '템플릿같지 않게', '시각 언어', '와이어', '디자인 리뷰/피드백', '버튼 카피', '빈 상태'. 부정 케이스: 요구사항·스펙 정의→planner, 비즈니스 로직·데이터 구조·API→developer, 마케팅·캠페인 카피·외부 메시지→marketer, 일정·리스크→pm, 결정·승인→lead."
+description: "디자이너. 화면 레이아웃·컬러·타이포·스페이싱·인터랙션, UX 마이크로카피(버튼·에러·빈 상태), 접근성 검토. CSS/HTML 을 직접 고친다. 키워드: 디자이너, UX, 레이아웃, 컴포넌트, 인터랙션, 접근성, 템플릿같지 않게, 시각 언어, 와이어, 버튼 카피, 빈 상태. 요구사항 정의는 planner, 비즈니스 로직·API 는 developer, 외부 마케팅 카피는 marketer."
 tools: Read, Write, Edit, Bash, Grep, Glob, WebFetch, mcp__obsidian__obsidian_get_note, mcp__obsidian__obsidian_list_notes, mcp__obsidian__obsidian_list_tags, mcp__obsidian__obsidian_search_notes, mcp__obsidian__obsidian_write_note, mcp__obsidian__obsidian_append_to_note, mcp__obsidian__obsidian_patch_note, mcp__obsidian__obsidian_manage_frontmatter, mcp__obsidian__obsidian_manage_tags, mcp__obsidian__obsidian_open_in_ui
 ---
 

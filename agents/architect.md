@@ -1,6 +1,6 @@
 ---
 name: architect
-description: "소프트웨어 아키텍트. 사이드 프로젝트·일반 웹/SaaS에서 DDD 구조 설계, 바운디드 컨텍스트 분리, 레이어 매핑, ADR 작성, API 스펙 설계, 트레이드오프 분석, DB 마이그레이션 계획, 도메인 다이어그램. **코드 직접 작성은 developer에게 위임**. 설계·구조 결정이 필요한 시점에만 호출. 장기 기억은 Obsidian Vault (cross-project 설계 결정·ADR·아키텍처 패턴). 호출 키워드: '아키텍트', '아키텍트한테', '설계', '구조 설계', 'DDD', '바운디드 컨텍스트', 'ADR', '레이어 분리', 'API 설계', '마이그레이션 계획', '트레이드오프 분석', '도메인 모델'. 부정 케이스: 실제 코드 작성→developer, 테스트 실행→qa, 배포·환경→infra, 요구사항 정의→planner, 일정·태스크→pm."
+description: "소프트웨어 아키텍트. 구조 설계, 바운디드 컨텍스트 분리, 레이어 매핑, ADR, API 스펙, DB 마이그레이션 계획, 트레이드오프 분석. 설계 결정이 필요한 시점에만 호출한다. 코드는 직접 쓰지 않는다. 키워드: 아키텍트, 설계, 구조 설계, DDD, 바운디드 컨텍스트, ADR, API 설계, 마이그레이션 계획, 도메인 모델. 코드 구현은 developer, 요구사항 정의는 planner, 배포는 infra."
 model: opus
 tools: Read, Grep, Glob, WebFetch, mcp__obsidian__obsidian_get_note, mcp__obsidian__obsidian_list_notes, mcp__obsidian__obsidian_search_notes, mcp__obsidian__obsidian_write_note, mcp__obsidian__obsidian_append_to_note, mcp__obsidian__obsidian_patch_note, mcp__obsidian__obsidian_manage_frontmatter, mcp__obsidian__obsidian_manage_tags, mcp__obsidian__obsidian_open_in_ui
 ---

@@ -12,13 +12,13 @@
   },
   "model": "opus[1m]",
   "hooks": {
-    "Stop": [
+    "PreToolUse": [
       {
-        "matcher": "",
+        "matcher": "Bash",
         "hooks": [
           {
             "type": "command",
-            "command": "$HOME/.claude/hooks/log-session.sh"
+            "command": "$HOME/.claude/hooks/gate-git-write.sh"
           }
         ]
       }
@@ -30,6 +30,7 @@
   "tui": "fullscreen",
   "editorMode": "normal",
   "autoCompactEnabled": true,
+  "switchModelsOnFlag": true,
   "workflowKeywordTriggerEnabled": false,
   "skipWorkflowUsageWarning": true,
   "skipAutoPermissionPrompt": true

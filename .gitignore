@@ -8,6 +8,13 @@ skills/wiki-report-evolve/
 docs/
 private/
 
+# claude.ai 에서 동기화된 번들 스킬 — Anthropic 자산이고 자동 갱신된다. 추적하지 않는다.
+skills/synced/
+
+# 로컬 전용 — 소속·이름 등 식별 정보와 게이트 대상 경로
+CLAUDE.private.md
+git-gate-dirs
+
 # install.sh 가 만든 백업
 *.bak
 *.bak.*

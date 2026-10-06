@@ -1,6 +1,8 @@
 ---
 name: sync-knowledge
 description: Obsidian에 쌓인 도메인 지식을 현재 저장소의 CLAUDE.md에 동기화한다. 저장소별 지식(`{프로젝트}/{저장소}/`)과 공통 지식(`{프로젝트}/_common/`)을 읽어 CLAUDE.md의 "## 도메인 지식" 섹션을 업데이트. 팀원이 저장소를 체크아웃하면 별도 Obsidian 없이도 도메인 지식을 Claude가 인지. "/sync-knowledge", "claude.md 동기화", "도메인 지식 공유", "공통 정책 반영" 요청에 사용.
+# 사용자가 이름을 부를 때만 돈다 — 대상 저장소의 CLAUDE.md 를 고쳐 쓴다. git 에 올라가는 파일이다.
+disable-model-invocation: true
 ---
 
 # Sync Knowledge — Obsidian → 저장소 CLAUDE.md 동기화
@@ -42,6 +44,18 @@ obsidian_list_notes "{프로젝트}/_common"    → 공통 파일 목록
 {repo루트}/.claude/CLAUDE.md (없으면)
 ```
 없으면 `{repo루트}/CLAUDE.md` 신규 생성.
+
+**심링크 가드 (필수)** — 대상을 정한 뒤 반드시 확인한다.
+
+```bash
+[ -L "$target" ] && echo "SYMLINK: $(readlink "$target")"
+```
+
+- **심링크면 그 파일을 수정하지 않는다.** 같은 디렉터리의 `CLAUDE.local.md` 로 대상을 바꾸고,
+  그것도 없으면 사용자에게 묻는다.
+- 근거: 워크스페이스 루트 `CLAUDE.md` 가 팀 저장소의 정본으로 걸린 심링크인 경우가 있다.
+  따라가서 쓰면 **팀이 추적하는 파일을 직접 고치게 된다.**
+- 이 경우 5번 완료 보고의 `git add CLAUDE.md` 안내도 하지 않는다 — 개인 파일이라 커밋 대상이 아니다.
 
 ### 4. CLAUDE.md 업데이트
 
