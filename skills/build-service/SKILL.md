@@ -1,6 +1,8 @@
 ---
 name: build-service
 description: 7개 subagent(planner/designer/architect/developer/infra/qa/security)를 PM 오케스트레이션으로 협업시켜 신규 서비스를 0에서 구축하는 워크플로. 8 Phase 구조 (PRD → 분해 → 병렬 설계 → 정합 점검 → 구현 → 병렬 검증 → 최종 점검 → 사용자 보고), Phase 1·4·7에 사용자 승인 게이트, 재기획 루프 최대 10회. 병렬화 가능한 Phase 3·6은 단일 메시지에서 multiple Agent calls로 진짜 병렬 실행. 모든 산출물은 로컬 .build-service/ + Obsidian Vault dual-write. "신규 서비스 구축", "그룹웨어 만들어줘", "/build-service" 같은 요청에 사용.
+# 사용자가 이름을 부를 때만 돈다 — 7개 subagent 를 8 Phase 로 spawn 한다. 비용이 크고 .build-service/ 와 Obsidian 에 쓴다.
+disable-model-invocation: true
 ---
 
 # Build Service — 멀티 에이전트 오케스트레이션
