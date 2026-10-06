@@ -13,6 +13,21 @@ cd ~/Desktop/source/secretj-claude-config && ./install.sh
 
 ---
 
+## 구조 한눈에
+
+<p align="center">
+  <img src="assets/load-timing.svg" alt="로드 시점으로 레이어를 나눈 구조 — 매 세션 전부 로드되는 것, 이름을 부를 때만 로드되는 것, 그 에이전트가 돌 때만 로드되는 것" width="100%">
+</p>
+
+<p align="center">
+  <img src="assets/ownership.svg" alt="~/.claude 의 소유권 분할 — commands 는 사내 저장소, 나머지는 이 저장소가 정본" width="100%">
+</p>
+
+> 두 도식은 CSS 애니메이션이 들어간 SVG 다. GitHub·브라우저에서 움직이고, 다크모드를 따라가고,
+> `prefers-reduced-motion` 을 켠 환경에서는 정지 상태로 보인다. 자세한 내용은 아래 각 절에 있다.
+
+---
+
 ## 이 저장소가 담는 것과 담지 않는 것
 
 이 저장소는 **개인 자산만** 담는다. 네 갈래다.
