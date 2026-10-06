@@ -76,6 +76,20 @@ cd ~/Desktop/source/secretj-claude-config && ./install.sh
 | `skills/` | **이 저장소** | 개인 스킬 6개 |
 | `rules/`, `hooks/`, `templates/`, `CLAUDE.md` | **이 저장소** | — |
 
+### 어느 installer 를 돌리면 무슨 일이 생기나
+
+둘이 겹치는 자리는 **`agents/` 와 `settings.json` 둘뿐**이다. `commands/` 는 이 저장소가 아예 건드리지 않는다.
+
+| | 이 저장소 `./install.sh` | 사내 installer |
+|---|---|---|
+| `commands/` | 손대지 않는다 | dir-symlink 로 점유 |
+| `agents/` | **파일 단위** symlink. 남의 실제 파일은 보존 | **dir-symlink 로 덮어씀** → 이 저장소 agent 16개가 가려진다 |
+| `settings.json` | 키 단위 머지. 외부 훅 보존 | **symlink 로 교체** → 머지 결과와 로컬 훅이 날아간다 |
+| `skills/` `hooks/` `templates/` `rules/` `CLAUDE.md` `memory/` | 설치 | 손대지 않는다 |
+
+**방향이 비대칭이다.** 이 저장소의 설치는 사내 설정을 깨지 않는다. 반대는 깬다.
+사내 installer 를 돌린 뒤에는 `~/.claude/agents` 가 dir-symlink 로 바뀌었는지 확인하고, 그랬다면 그 심링크를 지우고 `./install.sh` 를 다시 돌린다. 절차는 설치 중 경고가 출력한다.
+
 ### 왜 agents 는 이 저장소가 정본인가
 
 사내 설치 스크립트는 `agents/` 를 **디렉토리 단위 symlink** 로 덮어쓴다. 그 방식은 이 저장소의 역할 agent 10개를 전부 가린다.
@@ -297,7 +311,8 @@ MCP 도구 검색이 기본이라 쓰지 않는 도구는 컨텍스트를 거의
 | 대상이 없음 | symlink 생성 |
 | 일반 파일/디렉토리 | `.bak.YYYYMMDD_HHMMSS` 로 백업 후 symlink |
 | 이미 우리 저장소로 symlink | 건너뜀 (멱등) |
-| 다른 곳으로 걸린 **디렉토리** symlink | **건드리지 않고 경고만** — 다른 도구가 점유 중일 수 있음 |
+| 다른 곳으로 걸린 **디렉토리** symlink | **건드리지 않고, 되돌리는 절차를 출력** — 남의 자산일 수 있어 자동으로 걷어내지 않는다 |
+| `settings.json` 이 symlink | 내용만 복사해 **실제 파일로 바꾼다** — 그러지 않으면 머지가 링크를 따라가 남의 저장소 파일을 덮어쓴다 |
 | 다른 곳으로 걸린 `CLAUDE.md` | 경고 후 백업하고 **이 저장소로 회수** |
 | 저장소에서 지운 agent·rule 의 symlink | **끊긴 링크로 판별해 정리** (`prune_dangling`) |
 

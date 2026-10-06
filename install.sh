@@ -84,6 +84,14 @@ link_file CLAUDE.md
 merge_settings() {
   local src="$REPO/settings.json" dst="$CLAUDE_DIR/settings.json"
   if [ "$DRY" = 1 ]; then say "  [dry] settings.json 머지 (저장소 키만 덮어쓰기)"; return 0; fi
+  # dst 가 symlink 면 파이썬 쓰기가 링크를 따라가 "남의 저장소 파일"을 덮어쓴다.
+  # 다른 설정 저장소가 여기를 symlink 로 점유했을 수 있다. 내용만 가져와 실제 파일로 바꾼다.
+  if [ -L "$dst" ]; then
+    warn "settings.json 이 symlink 였음 → $(readlink "$dst")"
+    warn "     그 저장소에 써 버리지 않도록 내용만 복사해 실제 파일로 바꾼다."
+    cp "$(readlink "$dst")" "$dst.link-was.$STAMP" 2>/dev/null || true
+    cp "$dst" "$dst.tmp.$STAMP" && rm "$dst" && mv "$dst.tmp.$STAMP" "$dst"
+  fi
   [ -f "$dst" ] && cp "$dst" "$dst.bak.$STAMP"
   /usr/bin/python3 - "$src" "$dst" <<'PYMERGE'
 import json, os, sys
@@ -159,7 +167,12 @@ link_each() {
   local name="$1" src="$REPO/$1" dst="$CLAUDE_DIR/$1"
   if [ -L "$dst" ]; then
     warn "$name/ 이 dir-symlink 이라 개별 파일을 넣을 수 없음 → $(readlink "$dst")"
-    warn "     다른 도구가 점유 중. 건너뜀."
+    warn "     다른 설정 저장소가 점유했다. 자동으로 걷어내지 않는다 — 남의 자산일 수 있다."
+    warn "     이 저장소를 $name/ 의 정본으로 되돌리려면:"
+    warn "       1) ls -la '$dst'  로 대상을 확인한다"
+    warn "       2) rm '$dst'      (심링크만 지운다. 가리키던 저장소는 그대로 남는다)"
+    warn "       3) 직전 백업이 있으면 되살린다: mv '$dst.bak' '$dst'"
+    warn "       4) ./install.sh 를 다시 돌린다"
     return 0
   fi
   run "mkdir -p '$dst'"
