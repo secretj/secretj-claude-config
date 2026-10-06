@@ -292,7 +292,9 @@ else
   printf '  settings : %s\n' "$([ -L "$CLAUDE_DIR/settings.json" ] && echo 'symlink(권장 아님)' || echo '머지 복사')"
   printf '  agents   : %s개\n' "$(ls -1 "$CLAUDE_DIR/agents" 2>/dev/null | wc -l | tr -d ' ')"
   printf '  rules    : %s개\n' "$(ls -1 "$CLAUDE_DIR/rules" 2>/dev/null | wc -l | tr -d ' ')"
-  printf '  skills   : %s개\n' "$(ls -1d "$REPO/skills"/*/ 2>/dev/null | wc -l | tr -d ' ')"
+  printf '  skills   : %s개%s\n' \
+    "$(ls -1d "$REPO/skills"/*/ 2>/dev/null | grep -vc '/synced/$' | tr -d ' ')" \
+    "$([ -d "$REPO/skills/synced" ] && printf ' (+ claude.ai 동기화 번들)')"
   printf '  memory   : %s개\n' "$(ls -1 "$MEM_DIR" 2>/dev/null | wc -l | tr -d ' ')"
 fi
 say ""
