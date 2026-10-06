@@ -134,6 +134,9 @@ for k, v in repo.items():
         merged[k] = pm
     elif k == 'hooks' and isinstance(live.get(k), dict) and isinstance(v, dict):
         merged[k] = merge_hooks(live[k], v)
+    elif k == 'enabledPlugins' and isinstance(live.get(k), dict) and isinstance(v, dict):
+        # 로컬에서 설치한 플러그인·mod 를 덮어쓰지 않는다. 저장소 항목만 보장한다.
+        merged[k] = {**live[k], **v}
     else:
         merged[k] = v
 json.dump(merged, open(dst, 'w', encoding='utf-8'), indent=2, ensure_ascii=False)
