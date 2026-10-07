@@ -90,8 +90,12 @@ def update(ledger, pct):
         for c in convs.values():
             c["pending"] = 0.0
         ledger["last_pct"] = pct
-    elif rise < 0:
-        ledger["last_pct"] = pct                                 # 값이 흔들려 내려간 경우. 배정은 되돌리지 않는다
+    # rise < 0 은 무시한다. 한 창 안에서 사용률은 내려가지 않는다. 낮은 값은 한동안 API 를 안 부른
+    # 대화가 들고 있는 옛 값이다. 기준점을 내리면 같은 상승분을 다시 배정해 합이 부푼다
+    total_share = sum(c["share"] for c in convs.values())
+    if total_share > ledger["last_pct"] > 0:                    # 이전 버전이 부풀린 장부를 사용률에 맞춰 줄인다
+        for c in convs.values():
+            c["share"] *= ledger["last_pct"] / total_share
     return me["share"]
 
 def conversation_share(pct, resets_at):
