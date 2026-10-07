@@ -1,0 +1,135 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 470" width="880" height="470" role="img" aria-label="세션 사용률이 오르면 오른 만큼을 그사이 각 대화가 쓴 비용 비율로 나눠 배정한다. 그사이 아무 대화도 비용을 쓰지 않았으면 다른 곳의 몫으로 둔다. 그래서 비중의 합이 100% 를 넘지 않는다.">
+  <title>이 대화의 비중은 공유 장부로 센다</title>
+  <desc>대화 A 가 3달러, 대화 B 가 1달러를 쓰는 동안 세션 사용률이 0% 에서 8% 로 오른다. 장부는 8%p 를 3:1 로 나눠 A 에 6, B 에 2 를 배정한다. 이어서 이 컴퓨터가 아무것도 쓰지 않는 동안 12% 로 오르면 4%p 는 다른 곳의 몫이다. 결과는 A 50%, B 17%, 다른 곳 33% 이고 합은 100% 다.</desc>
+
+  <style>
+    :root {
+      --bg: #ffffff; --fg: #1f2328; --muted: #59636e; --line: #d1d9e0; --card: #f6f8fa;
+      --a: #0969da; --b: #1a7f37; --other: #8c959f; --chip: #eaeef2; --term: #24292f; --termfg: #e6edf3;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #0d1117; --fg: #e6edf3; --muted: #9198a1; --line: #3d444d; --card: #151b23;
+        --a: #4493f8; --b: #3fb950; --other: #6e7681; --chip: #212830; --term: #010409; --termfg: #e6edf3;
+      }
+    }
+    .bg { fill: var(--bg); }
+    text { font-family: system-ui, -apple-system, "Apple SD Gothic Neo", "Segoe UI", "Malgun Gothic", "Noto Sans KR", sans-serif; }
+    .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+    .h1 { font-size: 21px; font-weight: 700; fill: var(--fg); }
+    .sub { font-size: 13px; fill: var(--muted); }
+    .lab { font-size: 14px; font-weight: 700; fill: var(--fg); }
+    .labm { font-size: 11px; fill: var(--muted); }
+    .colh { font-size: 12px; font-weight: 700; fill: var(--muted); letter-spacing: .02em; }
+    .val { font-size: 12px; fill: var(--fg); }
+    .cap { font-size: 12.5px; fill: var(--muted); }
+    .card { fill: var(--card); stroke: var(--line); stroke-width: 1; }
+    .track { fill: var(--chip); }
+    .a { fill: var(--a); } .b { fill: var(--b); } .o { fill: var(--other); }
+    .term { fill: var(--term); }
+    .tt { font-size: 13px; fill: var(--termfg); }
+    .ta { fill: var(--a); font-weight: 700; } .tb { fill: var(--b); font-weight: 700; }
+
+    /* 16초 한 바퀴: ① 비용이 쌓인다 → ② 사용률이 오르면 비용 비율로 배정 → ③ 아무도 안 쓰는 동안 오른 몫은 다른 곳 → ④ 결과 */
+    .grow { transform-box: fill-box; transform-origin: left center; }
+    .pendA { animation: pend 16s ease-in-out infinite; }
+    .pendB { animation: pend 16s ease-in-out infinite; }
+    @keyframes pend {
+      0%, 6%   { transform: scaleX(0); }
+      20%, 30% { transform: scaleX(1); }
+      38%, 100% { transform: scaleX(0); }
+    }
+    .shareAB { animation: shareAB 16s ease-in-out infinite; }
+    @keyframes shareAB {
+      0%, 30%  { transform: scaleX(0); }
+      38%, 95% { transform: scaleX(1); }
+      100%     { transform: scaleX(0); }
+    }
+    .shareO { animation: shareO 16s ease-in-out infinite; }
+    @keyframes shareO {
+      0%, 52%  { transform: scaleX(0); }
+      60%, 95% { transform: scaleX(1); }
+      100%     { transform: scaleX(0); }
+    }
+    .ph { opacity: 0; }
+    .p1 { animation: p1 16s infinite; } @keyframes p1 { 0%, 5% { opacity: 0 } 8%, 30% { opacity: 1 } 33%, 100% { opacity: 0 } }
+    .p2 { animation: p2 16s infinite; } @keyframes p2 { 0%, 30% { opacity: 0 } 33%, 50% { opacity: 1 } 53%, 100% { opacity: 0 } }
+    .p3 { animation: p3 16s infinite; } @keyframes p3 { 0%, 50% { opacity: 0 } 53%, 70% { opacity: 1 } 73%, 100% { opacity: 0 } }
+    .p4 { animation: p4 16s infinite; } @keyframes p4 { 0%, 70% { opacity: 0 } 74%, 95% { opacity: 1 } 100% { opacity: 0 } }
+    .n0 { animation: n0 16s infinite; } @keyframes n0 { 0%, 31% { opacity: 1 } 33%, 100% { opacity: 0 } }
+    .n8 { animation: n8 16s infinite; } @keyframes n8 { 0%, 31% { opacity: 0 } 33%, 52% { opacity: 1 } 54%, 100% { opacity: 0 } }
+    .n12 { animation: n12 16s infinite; } @keyframes n12 { 0%, 52% { opacity: 0 } 54%, 100% { opacity: 1 } }
+    .res { animation: res 16s infinite; } @keyframes res { 0%, 72% { opacity: 0 } 76%, 95% { opacity: 1 } 100% { opacity: 0 } }
+
+    @media (prefers-reduced-motion: reduce) {
+      .pendA, .pendB, .ph, .n0, .n8 { animation: none; opacity: 0; }
+      .shareAB, .shareO { animation: none; transform: none; }
+      .n12, .res, .p4 { animation: none; opacity: 1; }
+    }
+  </style>
+
+  <rect class="bg" width="880" height="470" rx="12"/>
+  <text class="h1" x="32" y="44">이 대화의 비중은 공유 장부로 센다</text>
+  <text class="sub" x="32" y="68">세션 사용률이 오르면, 오른 만큼을 그사이 각 대화가 쓴 비용 비율로 나눈다. 아무도 안 썼으면 다른 곳의 몫이다.</text>
+
+  <!-- 세션 사용률 카운터 -->
+  <rect class="card" x="700" y="92" width="148" height="64" rx="10"/>
+  <text class="labm" x="716" y="114">세션 사용률</text>
+  <text class="mono n0" x="716" y="144" style="font-size:26px;font-weight:700;fill:var(--fg)">0%</text>
+  <text class="mono n8" x="716" y="144" style="font-size:26px;font-weight:700;fill:var(--fg)">8%</text>
+  <text class="mono n12" x="716" y="144" style="font-size:26px;font-weight:700;fill:var(--fg)">12%</text>
+
+  <!-- 열 머리 -->
+  <text class="colh" x="180" y="128">그사이 쓴 비용 (pending)</text>
+  <text class="colh" x="420" y="128">배정된 몫 (세션 %p)</text>
+
+  <!-- 행: 대화 A -->
+  <text class="lab" x="32" y="170">대화 A</text>
+  <text class="labm" x="32" y="187">이 컴퓨터 · 터미널 1</text>
+  <rect class="track" x="180" y="160" width="200" height="18" rx="4"/>
+  <rect class="a grow pendA" x="180" y="160" width="150" height="18" rx="4"/>
+  <text class="val mono ph p1" x="336" y="174">$3</text>
+
+  <!-- 행: 대화 B -->
+  <text class="lab" x="32" y="230">대화 B</text>
+  <text class="labm" x="32" y="247">이 컴퓨터 · 터미널 2</text>
+  <rect class="track" x="180" y="220" width="200" height="18" rx="4"/>
+  <rect class="b grow pendB" x="180" y="220" width="50" height="18" rx="4"/>
+  <text class="val mono ph p1" x="236" y="234">$1</text>
+
+  <!-- 행: 다른 곳 -->
+  <text class="lab" x="32" y="290">다른 곳</text>
+  <text class="labm" x="32" y="307">claude.ai · 다른 컴퓨터</text>
+  <rect class="track" x="180" y="280" width="200" height="18" rx="4"/>
+  <text class="labm" x="190" y="294">장부에 안 보인다</text>
+
+  <!-- 배정: 세션 사용량 하나를 쌓은 막대. 1%p = 34px -->
+  <rect class="track" x="420" y="210" width="408" height="38" rx="6"/>
+  <g class="grow shareAB">
+    <rect class="a" x="420" y="210" width="204" height="38" rx="6"/>
+    <rect class="b" x="624" y="210" width="68" height="38"/>
+    <text class="tt mono" x="432" y="234" style="fill:#fff">A 6</text>
+    <text class="tt mono" x="632" y="234" style="fill:#fff">B 2</text>
+  </g>
+  <g class="grow shareO">
+    <rect class="o" x="692" y="210" width="136" height="38" rx="0"/>
+    <text class="tt mono" x="702" y="234" style="fill:#fff">다른 곳 4</text>
+  </g>
+  <text class="labm" x="420" y="268">0%</text>
+  <text class="labm" x="815" y="268">12%</text>
+
+  <!-- 단계 설명 -->
+  <g class="ph p1"><text class="cap" x="420" y="174">① 두 대화가 비용을 쓴다. 장부에 쌓아 둔다</text></g>
+  <g class="ph p2"><text class="cap" x="420" y="174">② 0% → 8%. 8%p 를 비용 비율 3 : 1 로 나눈다</text></g>
+  <g class="ph p3"><text class="cap" x="420" y="174">③ 8% → 12%. 그사이 이 컴퓨터는 안 썼다 → 다른 곳</text></g>
+  <g class="ph p4"><text class="cap" x="420" y="174">④ 몫 ÷ 세션 사용률 = 이 대화의 비중</text></g>
+
+  <!-- 결과 상태줄 -->
+  <g class="res">
+    <rect class="term" x="32" y="340" width="816" height="38" rx="8"/>
+    <text class="tt mono" x="48" y="364">대화 A │ Opus 5.5 · 이 대화 <tspan class="ta">50%</tspan> · 세션 12% ↻17:30 · 주간 35%</text>
+    <rect class="term" x="32" y="386" width="816" height="38" rx="8"/>
+    <text class="tt mono" x="48" y="410">대화 B │ Opus 5.5 · 이 대화 <tspan class="tb">17%</tspan> · 세션 12% ↻17:30 · 주간 35%</text>
+    <text class="cap" x="32" y="450">A 50% + B 17% + 다른 곳 33% = 100%. 대화를 몇 개 돌려도 합이 100% 를 넘지 않는다.</text>
+  </g>
+</svg>
