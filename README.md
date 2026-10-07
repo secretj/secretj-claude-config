@@ -296,6 +296,16 @@ export CLAUDE_GIT_GATE_DIRS="$HOME/work/repo-a:$HOME/work/repo-b"
 
 에이전트를 골라 작업을 맡기고, 끝나면 결과를 대화에 붙인다.
 
+<p align="center">
+  <img src="assets/agent-run-flow.svg" alt="agent-run 흐름 — /agent-run, 에이전트 고르기, 작업 입력, 백그라운드 실행, 결과 두 행 붙이기" width="100%">
+</p>
+
+| 고르기 | 작업 입력 |
+|---|---|
+| <img src="assets/screens/agent-run-1-pick.png" alt="/agent-run 패널에서 에이전트 목록을 고르는 실제 화면"> | <img src="assets/screens/agent-run-2-task.png" alt="codebase-locator 에게 맡길 작업을 입력하는 실제 화면"> |
+| **실행 중** | **결과** |
+| <img src="assets/screens/agent-run-3-start.png" alt="시작 토스트와 하단의 백그라운드 에이전트 표시"> | <img src="assets/screens/agent-run-4-result.png" alt="에이전트가 끝나고 결과가 대화에 붙은 실제 화면"> |
+
 | 입력 | 동작 |
 |---|---|
 | `/agent-run` | 패널을 연다. 에이전트를 고르고 작업을 입력한다 |
