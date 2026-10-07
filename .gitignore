@@ -41,3 +41,7 @@ mcp-servers.json
 *.key
 secrets/
 credentials/
+
+# mod 를 로드하면 엔진이 만드는 타입 파일·tsconfig — 빌드마다 다시 생긴다
+mods/*/.claude-plugin/types/
+mods/*/tsconfig.json
