@@ -136,6 +136,7 @@ done
 | `agents/` (16) | `~/.claude/agents/*.md` | 파일 단위 symlink |
 | `hooks/` | `~/.claude/hooks` | 디렉토리 symlink |
 | `templates/` | `~/.claude/templates` | 디렉토리 symlink |
+| `mods/` (1) | Claude Code 플러그인 | `/plugin install` (아래 mods 절) |
 | `settings.json` | `~/.claude/settings.json` | **머지 복사** |
 | `memory/` (19) | `~/.claude/projects/<home>/memory/` | **복사** |
 | `mcp/mcp-servers.example.json` | `~/.claude.json` 의 `mcpServers` | `--mcp` 옵션 |
@@ -307,6 +308,50 @@ export CLAUDE_GIT_GATE_DIRS="$HOME/work/repo-a:$HOME/work/repo-b"
 - 한계 — 같은 순간에 다른 곳에서 쓴 양은 그 순간 비용을 쓴 대화에 섞인다. 비용과 한도 차감이 비례한다는 것은 가정이다. 장부가 생기기 전의 사용량은 누구 몫으로도 배정하지 않는다.
 - API 키 사용자는 `rate_limits` 가 없어 한도 칸이 빠진다.
 - `/usr/bin/python3` 가 필요하다. `install.sh` 와 같은 조건이다.
+
+---
+
+## mods
+
+`mods/` 는 Claude Code mod(함수 훅 플러그인)다. `install.sh` 가 깔지 않는다. 저장소 루트의 `.claude-plugin/marketplace.json` 이 이 저장소를 마켓플레이스로 만들어서, 터미널 세션에서 한 줄로 설치한다.
+
+```
+/plugin install agent-run --marketplace secretj/secretj-claude-config
+```
+
+`Add marketplace?` 에 `y`, 범위는 user 를 고른다. 설치한 세션부터 바로 동작한다.
+
+### agent-run
+
+에이전트를 골라 작업을 맡기고, 끝나면 결과를 대화에 붙인다.
+
+<p align="center">
+  <img src="assets/agent-run-flow.svg" alt="agent-run 흐름 — /agent-run, 에이전트 고르기, 작업 입력, 백그라운드 실행, 결과 두 행 붙이기" width="100%">
+</p>
+
+| 고르기 | 작업 입력 |
+|---|---|
+| <img src="assets/screens/agent-run-1-pick.png" alt="/agent-run 패널에서 에이전트 목록을 고르는 실제 화면"> | <img src="assets/screens/agent-run-2-task.png" alt="codebase-locator 에게 맡길 작업을 입력하는 실제 화면"> |
+| **실행 중** | **결과** |
+| <img src="assets/screens/agent-run-3-start.png" alt="시작 토스트와 하단의 백그라운드 에이전트 표시"> | <img src="assets/screens/agent-run-4-result.png" alt="에이전트가 끝나고 결과가 대화에 붙은 실제 화면"> |
+
+| 입력 | 동작 |
+|---|---|
+| `/agent-run` | 패널을 연다. 에이전트를 고르고 작업을 입력한다 |
+| `/agent-run developer 로그인 테스트 써줘` | 패널 없이 바로 맡긴다 |
+| `/agent-run developer` | 그 에이전트를 고른 상태로 작업 입력창을 연다 |
+
+- 에이전트는 백그라운드에서 돈다. 시작과 끝에 토스트를 띄운다.
+- 끝나면 결과를 두 행으로 붙인다. 사람이 보는 알림 행은 앞 1,500자, Claude 가 읽는 행(화면에 안 보임)은 전문이다. 그래서 다음 질문부터 Claude 가 결과를 안다.
+- 에이전트 목록은 엔진이 Claude 에게 에이전트를 소개할 때(`agent.offer`) 모은다. 목록을 돌려주는 API 가 없어서, 설치 직후에는 응답이 한 번 끝나야 목록이 찬다.
+- 모바일 화면에는 선택·입력 요소가 없어 패널 대신 안내 문구를 띄운다.
+
+검사는 mod 폴더에서 돌린다. 타입 검사는 mod 가 한 번 로드돼 엔진이 `.claude-plugin/types/` 를 만든 뒤에 된다.
+
+```bash
+claude plugin validate mods/agent-run
+claude plugin test mods/agent-run
+```
 
 ---
 

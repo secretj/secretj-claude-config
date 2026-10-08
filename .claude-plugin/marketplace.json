@@ -1,0 +1,14 @@
+{
+  "name": "secretj-claude-config",
+  "description": "secretj-claude-config 의 Claude Code mod 모음",
+  "owner": {
+    "name": "secretj"
+  },
+  "plugins": [
+    {
+      "name": "agent-run",
+      "source": "./mods/agent-run",
+      "description": "에이전트를 패널에서 골라 작업을 맡기고, 끝나면 결과를 대화에 붙인다"
+    }
+  ]
+}

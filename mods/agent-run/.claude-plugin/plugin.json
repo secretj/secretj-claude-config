@@ -1,0 +1,9 @@
+{
+  "name": "agent-run",
+  "version": "0.1.0",
+  "description": "에이전트를 패널에서 골라 작업을 맡기고, 끝나면 결과를 대화에 붙인다",
+  "author": {
+    "name": "secretj"
+  },
+  "types": "./types/index.d.ts"
+}
