@@ -279,6 +279,35 @@ export CLAUDE_GIT_GATE_DIRS="$HOME/work/repo-a:$HOME/work/repo-b"
 
 경로 자체가 조직 정보일 수 있어 설정 파일은 추적하지 않는다.
 
+`statusline.sh` — **statusLine 스크립트.** 훅은 아니지만 같은 디렉토리 symlink 로 설치된다. 플랜 사용 한도와 이 대화가 쓴 몫을 상태줄에 한 줄로 보여 준다.
+
+<p align="center">
+  <img src="assets/screens/statusline-bar.png" alt="iTerm2 에서 실제로 보이는 상태줄 — Opus 5.5 · 이 대화 0% · 세션 14% ↻19:40 · 주간 41% ↻10/08 02:00" width="100%">
+</p>
+
+
+| 칸 | 뜻 | 출처 |
+|---|---|---|
+| `세션` | 5시간 한도 사용률. `/usage` 의 "Current session" 과 같다 | `rate_limits.five_hour` |
+| `주간` | 7일 한도 사용률 | `rate_limits.seven_day` |
+| `이 대화` | 세션 사용량 중 이 대화의 비중. 세션 8% 중 2%p 를 이 대화가 썼으면 25% | 직접 센다 |
+
+- `↻` 뒤는 리셋 시각이다. 사용률은 70% 부터 노랑, 90% 부터 빨강이다.
+- `이 대화` 는 입력 JSON 에 없는 값이라 장부로 센다. 장부는 세션 창마다 파일 하나(`$TMPDIR/claude-statusline-<uid>/ledger-<resets_at>.json`)이고, 이 컴퓨터의 모든 대화가 공유한다.
+  1. 대화마다 이번 창에서 쓴 비용(`cost.total_cost_usd` 의 증가분)을 장부에 쌓는다.
+  2. 세션 사용률이 오르면, 오른 만큼을 그사이 각 대화가 쓴 비용 비율로 나눠 배정한다.
+  3. 그사이 이 컴퓨터의 대화가 비용을 쓰지 않았으면, 다른 곳(claude.ai·다른 컴퓨터)의 몫으로 둔다.
+- 그래서 이 컴퓨터의 대화를 모두 합쳐도 100% 를 넘지 않는다.
+
+<p align="center">
+  <img src="assets/statusline-ledger.svg" alt="공유 장부가 세션 사용률 상승분을 대화별 비용 비율로 나누는 과정 — A 6, B 2, 다른 곳 4 로 나눠 A 50%, B 17%" width="100%">
+</p>
+
+- 새 창이 열리면 스크립트가 새 장부를 쓰고 지난 장부를 지운다. 크론은 쓰지 않는다.
+- 한계 — 같은 순간에 다른 곳에서 쓴 양은 그 순간 비용을 쓴 대화에 섞인다. 비용과 한도 차감이 비례한다는 것은 가정이다. 장부가 생기기 전의 사용량은 누구 몫으로도 배정하지 않는다.
+- API 키 사용자는 `rate_limits` 가 없어 한도 칸이 빠진다.
+- `/usr/bin/python3` 가 필요하다. `install.sh` 와 같은 조건이다.
+
 ---
 
 ## memory
